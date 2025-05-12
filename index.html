@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AllEars Helpdesk</title>
+</head>
+<body>
+  <h1>AllEars Helpdesk</h1>
+
+  <form id="helpdeskForm">
+    
+    <!-- User Role -->
+     <h2>About You</h2>
+        <div>
+            <h3><label for="userRole">Your Role</label></h3>
+        </div>
+        <div>
+            <select id="userRole" name="userRole" required>
+                <option value="" class=""tooltip>-- Which best describes your role?--</option>
+                <option value="school-staff">School Staff</option>
+                <option value="hq-staff">HQ Staff</option>
+                <option value="student">Student</option>
+                <option value="parent">Parent</option>
+                <option value="others">Others</option>
+            </select>
+        </div>
+
+    <!-- Conditional text if 'Others' is selected -->
+    <div id="otherRoleDiv" style="display:;">
+      <h3><label for="otherRoleText">Describe your role:</label></h3>
+      <input type="text" id="otherRoleText" name="otherRoleText" style="width: 90%;">
+    </div>
+
+    <!-- Issue Type -->
+    <h2>Issue Details</h2>
+    <h3><label for="issueType">Issue Type</label></h3>
+    <div>
+        <select id="issueType" name="issueType" required>
+        <option value="" class="tooltip">-- Select the primary issue you're facing --</option>
+        <option value="login">Login to AE</option>
+        <option value="access-form">Accessing a Form</option>
+        <option value="create-form">Creating a Form</option>
+        <option value="audience">Managing Form Audience</option>
+        <option value="publish">Publishing/Sharing a Form</option>
+        <option value="responses">Managing Responses</option>
+        <option value="collaborators">Managing Collaborators</option>
+        <option value="feature-request">Feature Request</option>
+        <option value="other">Other</option>
+        </select>
+        <h5 class="subtitle">You can use the free-text box below if there are other issues.</h5>
+    </div>
+
+    <!-- Relevant Links Section -->
+    <div id="relevantLinks" style="display;">
+        <h3>Relevant Links</h3>
+        <ul id="linksList"></ul>
+        <!-- Insert the varying scenario and the UX Copy-->
+    </div>
+
+     <!-- Description Textarea -->
+    <div>
+        <h3><label for="description">Issue Description</label></h3>
+        <textarea id="description" name="description" rows="5" required placeholder="Describe the issue in your own words. Tell us what you expected, what actually happened, and what you've already tried." style="width: 90%;"></textarea>
+    </div>
+
+    <!-- File Uploads (Screenshot and Video) -->
+    <div>
+        <h3><label for="screenshot">Upload Screenshot (JPG, PNG):</label></h3>
+        <input type="file" id="screenshot" name="screenshot" accept="image/*" title="Upload a screenshot to help us see what you are seeing.">
+    </div>
+
+    
+    <div>
+        <h3><label for="video">Upload Video (optional):</label></h3>
+        <input type="file" id="video" name="video" accept="video/mp4" title="Upload a screen recording if the issue is complex.">
+    </div>
+
+    <!-- Contact information-->
+    <h2>Contact Information</h2>
+    <div>
+        <h3><label for="fullName">Full Name</label></h3>
+        <input type="text" id="fullName" name="fullName" required placeholder="Please enter your full name so that we can identify you correctly" style="width: 90%;">
+    </div>
+    <div>
+        <h3><label for="email">MIMS ID</label></h3>
+        <input type="email" id="email" name="email" required placeholder="Please enter the email address you use when logging into MIMS" style="width: 90%;">
+    </div>
+    <div>
+        <input type="checkbox" id="useMimsAsContact" name="useMimsAsContact">
+        <h5 class="subtitle"><label for="useMimsAsContact">Use MIMS ID as Contact Email</label></h5>
+    </div>
+    <div>
+        <h3><label for="contactEmail">Contact Email</label></h3>
+        <input type="email" id="contactEmail" name="contactEmail" required placeholder="We'll use this to update you about your request" style="width: 90%;">
+    </div>
+    <div>
+        <h3><label for="school">School Name</label></h3>
+        <input type="text" id="school" name="school">
+    </div>
+
+    <div>
+        <button type="submit" id="submitRequest" style="padding: 10px 20px; font-size: 16px;">Submit Support Request</button>
+    </div>
+
+  </form>
+</body>
+</html>
