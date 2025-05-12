@@ -11,7 +11,7 @@
     
     <!-- User Role -->
      <fieldset>
-     <legend>About You</legend>
+     <legend>How can we support you today?</legend>
         <div>
             <h3><label for="userRole">Your Role</label></h3>
         </div>
@@ -31,12 +31,8 @@
       <h3><label for="otherRoleText">Describe your role:</label></h3>
       <input type="text" id="otherRoleText" name="otherRoleText" style="width: 90%;">
     </div>
-    </fieldset>
 
-    <!-- Issue Type -->
-     <fieldset>
-    <legend>Issue Details</legend>
-        <h3><label for="issueType">Issue Type</label></h3>
+    <h3><label for="issueType">Issue Type</label></h3>
         <div>
             <select id="issueType" name="issueType" required>
             <option value="">-- Select the primary issue you're facing --</option>
@@ -53,13 +49,21 @@
             <small>You can use the free-text box below if there are other issues.</small>
         </div>
 
-    <!-- Relevant Links Section -->
+        <!-- Relevant Links Section -->
         <div id="relevantLinks" style="display: none;">
             <h3>Relevant Links</h3>
             <ul id="linksList"></ul>
             <!-- Insert the varying scenario and the UX Copy-->
+            <div>
+                <input type="checkbox" id="confirmReadFAQ" name="confirmReadFAQ" required>
+                <label for="confirmReadFAQ">Yes, I've read the FAQ/guide, but still need support.</label>
+            </div>
         </div>
+    </fieldset>
 
+    <!-- Issue Type -->
+     <fieldset>
+    <legend>Issue Details</legend>
      <!-- Description Textarea -->
         <div>
             <h3><label for="description">Issue Description</label></h3>
