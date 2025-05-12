@@ -10,13 +10,14 @@
   <form id="helpdeskForm">
     
     <!-- User Role -->
-     <h2>About You</h2>
+     <fieldset>
+     <legend>About You</legend>
         <div>
             <h3><label for="userRole">Your Role</label></h3>
         </div>
         <div>
             <select id="userRole" name="userRole" required>
-                <option value="" class=""tooltip>-- Which best describes your role?--</option>
+                <option value="">-- Which best describes your role?--</option>
                 <option value="school-staff">School Staff</option>
                 <option value="hq-staff">HQ Staff</option>
                 <option value="student">Student</option>
@@ -26,81 +27,96 @@
         </div>
 
     <!-- Conditional text if 'Others' is selected -->
-    <div id="otherRoleDiv" style="display:;">
+    <div id="otherRoleDiv" style="display:none;">
       <h3><label for="otherRoleText">Describe your role:</label></h3>
       <input type="text" id="otherRoleText" name="otherRoleText" style="width: 90%;">
     </div>
+    </fieldset>
 
     <!-- Issue Type -->
-    <h2>Issue Details</h2>
-    <h3><label for="issueType">Issue Type</label></h3>
-    <div>
-        <select id="issueType" name="issueType" required>
-        <option value="" class="tooltip">-- Select the primary issue you're facing --</option>
-        <option value="login">Login to AE</option>
-        <option value="access-form">Accessing a Form</option>
-        <option value="create-form">Creating a Form</option>
-        <option value="audience">Managing Form Audience</option>
-        <option value="publish">Publishing/Sharing a Form</option>
-        <option value="responses">Managing Responses</option>
-        <option value="collaborators">Managing Collaborators</option>
-        <option value="feature-request">Feature Request</option>
-        <option value="other">Other</option>
-        </select>
-        <h5 class="subtitle">You can use the free-text box below if there are other issues.</h5>
-    </div>
+     <fieldset>
+    <legend>Issue Details</legend>
+        <h3><label for="issueType">Issue Type</label></h3>
+        <div>
+            <select id="issueType" name="issueType" required>
+            <option value="">-- Select the primary issue you're facing --</option>
+            <option value="login">Login to AE</option>
+            <option value="access-form">Accessing a Form</option>
+            <option value="create-form">Creating a Form</option>
+            <option value="audience">Managing Form Audience</option>
+            <option value="publish">Publishing/Sharing a Form</option>
+            <option value="responses">Managing Responses</option>
+            <option value="collaborators">Managing Collaborators</option>
+            <option value="feature-request">Feature Request</option>
+            <option value="other">Other</option>
+            </select>
+            <small>You can use the free-text box below if there are other issues.</small>
+        </div>
 
     <!-- Relevant Links Section -->
-    <div id="relevantLinks" style="display;">
-        <h3>Relevant Links</h3>
-        <ul id="linksList"></ul>
-        <!-- Insert the varying scenario and the UX Copy-->
-    </div>
+        <div id="relevantLinks" style="display: none;">
+            <h3>Relevant Links</h3>
+            <ul id="linksList"></ul>
+            <!-- Insert the varying scenario and the UX Copy-->
+        </div>
 
      <!-- Description Textarea -->
-    <div>
-        <h3><label for="description">Issue Description</label></h3>
-        <textarea id="description" name="description" rows="5" required placeholder="Describe the issue in your own words. Tell us what you expected, what actually happened, and what you've already tried." style="width: 90%;"></textarea>
-    </div>
+        <div>
+            <h3><label for="description">Issue Description</label></h3>
+            <textarea id="description" name="description" rows="5" required placeholder="Describe the issue in your own words. Tell us what you expected, what actually happened, and what you've already tried." style="width: 90%;"></textarea>
+        </div>
+
+    <!-- form identifier-->
+        <div>
+            <h3><label for="formName">Form Name</label></h3>
+            <input type="text" id="formName" name="formName" placeholder="Title of the form you're having trouble with" style="width: 90%;">
+            <h3><label for="formURL">Form Link</label></h3>
+            <input type="text" id="formURL" name="formURL" placeholder="Paste the full URL of the form, if available" style="width: 90%;">
+        </div>
 
     <!-- File Uploads (Screenshot and Video) -->
-    <div>
-        <h3><label for="screenshot">Upload Screenshot (JPG, PNG):</label></h3>
-        <input type="file" id="screenshot" name="screenshot" accept="image/*" title="Upload a screenshot to help us see what you are seeing.">
-    </div>
+        <div>
+            <h3><label for="screenshot">Upload Screenshot (JPG, PNG):</label></h3>
+            <input type="file" id="screenshot" name="screenshot" accept="image/*">
+            <small>Upload a screenshot to help us see what you are seeing.</small>
+        </div>
 
     
-    <div>
-        <h3><label for="video">Upload Video (optional):</label></h3>
-        <input type="file" id="video" name="video" accept="video/mp4" title="Upload a screen recording if the issue is complex.">
-    </div>
+        <div>
+            <h3><label for="video">Upload Video (optional):</label></h3>
+            <input type="file" id="video" name="video" accept="video/mp4">
+            <small>Upload a screen recording if the issue is complex.</small>
+        </div>
+    </fieldset>
 
     <!-- Contact information-->
-    <h2>Contact Information</h2>
-    <div>
-        <h3><label for="fullName">Full Name</label></h3>
-        <input type="text" id="fullName" name="fullName" required placeholder="Please enter your full name so that we can identify you correctly" style="width: 90%;">
-    </div>
-    <div>
-        <h3><label for="email">MIMS ID</label></h3>
-        <input type="email" id="email" name="email" required placeholder="Please enter the email address you use when logging into MIMS" style="width: 90%;">
-    </div>
-    <div>
-        <input type="checkbox" id="useMimsAsContact" name="useMimsAsContact">
-        <h5 class="subtitle"><label for="useMimsAsContact">Use MIMS ID as Contact Email</label></h5>
-    </div>
-    <div>
-        <h3><label for="contactEmail">Contact Email</label></h3>
-        <input type="email" id="contactEmail" name="contactEmail" required placeholder="We'll use this to update you about your request" style="width: 90%;">
-    </div>
-    <div>
-        <h3><label for="school">School Name</label></h3>
-        <input type="text" id="school" name="school">
-    </div>
+     <fieldset>
+    <legend>Contact Information</legend>
+        <div>
+            <h3><label for="fullName">Full Name</label></h3>
+            <input type="text" id="fullName" name="fullName" required placeholder="Please enter your full name so that we can identify you correctly" style="width: 90%;">
+        </div>
+        <div>
+            <h3><label for="email">MIMS ID</label></h3>
+            <input type="email" id="email" name="email" required placeholder="Please enter the email address you use when logging into MIMS" style="width: 90%;">
+        </div>
+        <div>
+            <input type="checkbox" id="useMimsAsContact" name="useMimsAsContact">
+            <label for="useMimsAsContact">Use MIMS ID as Contact Email</label>
+        </div>
+        <div>
+            <h3><label for="contactEmail">Contact Email</label></h3>
+            <input type="email" id="contactEmail" name="contactEmail" required placeholder="We'll use this to update you about your request" style="width: 90%;">
+        </div>
+        <div>
+            <h3><label for="school">School Name</label></h3>
+            <input type="text" id="school" name="school">
+        </div>
 
-    <div>
-        <button type="submit" id="submitRequest" style="padding: 10px 20px; font-size: 16px;">Submit Support Request</button>
-    </div>
+        <div>
+            <button type="submit" id="submitRequest" style="padding: 10px 20px; font-size: 16px;">Submit Support Request</button>
+        </div>
+     </fieldset>
 
   </form>
 </body>
