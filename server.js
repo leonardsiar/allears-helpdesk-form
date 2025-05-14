@@ -11,6 +11,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+app.set('trust proxy', 1);
+
 // Enable CORS for local frontend
 app.use(cors());
 app.use(express.json());
