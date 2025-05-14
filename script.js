@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const description = document.getElementById("description");
   const fieldset2 = document.getElementById("fieldset2");
   const fieldset3 = document.getElementById("fieldset3");
+  const form = document.getElementById('helpdeskForm');
+  const errorDiv = document.getElementById('formErrors');
 
   // Show/hide "Describe your role" field
   userRole.addEventListener("change", () => {
@@ -87,4 +89,36 @@ const screenshotInput = document.getElementById("screenshot");
 screenshotInput.addEventListener("change", () => {
   fieldset3.style.display = screenshotInput.files.length > 0 ? "block" : "none";
 });
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    errorDiv.innerHTML = ""; // Clear previous errors
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const html = await response.text();
+        // Try to extract errors from the HTML response
+        const match = html.match(/<ul>([\s\S]*?)<\/ul>/);
+        if (match) {
+          errorDiv.innerHTML = `<ul>${match[1]}</ul>`;
+        } else {
+          errorDiv.textContent = "An unknown error occurred.";
+        }
+      } else {
+        // On success, show a message or redirect
+        form.reset();
+        errorDiv.style.color = "green";
+        errorDiv.innerHTML = "🎉 Your request has been submitted successfully! Check your inbox for confirmation.";
+      }
+    } catch (err) {
+      errorDiv.textContent = "Network error. Please try again.";
+    }
+  });
 });

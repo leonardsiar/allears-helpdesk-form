@@ -69,11 +69,26 @@ app.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      // Collect error messages
+      const errorList = errors.array().map(err => `<li>${err.msg} (${err.param})</li>`).join('');
       return res.status(400).send(`
-        <html><body>
-        <div class="error">⚠️ Invalid input. Please check your entries and try again.</div>
-        <a href="/">Back to Helpdesk Form</a>
-        </body></html>
+        <html>
+          <head>
+            <title>Invalid Input</title>
+            <style>
+              body { font-family: sans-serif; text-align: center; margin-top: 5em; }
+              .error { color: red; font-size: 1.2em; }
+              ul { display: inline-block; text-align: left; }
+            </style>
+          </head>
+          <body>
+            <div class="error">
+              ⚠️ Invalid input. Please check your entries and try again.
+              <ul>${errorList}</ul>
+            </div>
+            <a href="/">Back to Helpdesk Form</a>
+          </body>
+        </html>
       `);
     }
 
