@@ -35,17 +35,17 @@ document.addEventListener("DOMContentLoaded", function () {
     relevantLinksDiv.style.display = "none"; // Hide by default
 
     if (role === "student" && issue === "login") {
-      linksList.innerHTML = "<li>🔔 Students: Please contact your school’s Local MIMS administrator first. </li>";
+      linksList.innerHTML = "<li>🔔 Students: Please contact your school’s Local MIMS administrator first.</li>";
       relevantLinksDiv.style.display = "block";
     } else if (role === "parent" && issue === "login") {
       linksList.innerHTML = "<li>👨‍👧 Parents: Please reach out to your child’s form teacher for support.</li>";
       relevantLinksDiv.style.display = "block";
-    } else if (role === "student" && issue === "create-form") {
+    } else if (role === "student" || role === "parent" && issue === "create-form") {
       linksList.innerHTML = "<li>🚫 Form creation is only available to school staff at the moment.</li>";
       relevantLinksDiv.style.display = "block";
     } else if (issue === "access-form" || issue === "responses") {
       linksList.innerHTML = "<li>💡 This guide might help solve your issue: <a href='#'>Troubleshooting Form Access</a></li>";
-      relevantLinksDiv.style.display = "block";
+      relevantLinksDiv.style.display = "block"; 
     }
   });
 });
