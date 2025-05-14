@@ -4,126 +4,116 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AllEars Helpdesk</title>
+  <script src="guidanceMatrix.js"></script>
   <script src="script.js" defer></script>
+  <style>
+    .form-group { margin-bottom: 1em; }
+    label { font-weight: bold; }
+    small { display: block; margin-top: 0.25em; }
+  </style>
 </head>
 <body>
   <h1>AllEars Helpdesk</h1>
 
   <form id="helpdeskForm">
-    
     <!-- User Role -->
-     <fieldset>
-     <legend>How can we support you today?</legend>
-        <div>
-            <h3><label for="userRole">Your Role</label></h3>
-        </div>
-        <div>
-            <select id="userRole" name="userRole" required>
-                <option value="">-- Which best describes your role?--</option>
-                <option value="school-staff">School Staff</option>
-                <option value="hq-staff">HQ Staff</option>
-                <option value="student">Student</option>
-                <option value="parent">Parent</option>
-                <option value="others">Others</option>
-            </select>
-        </div> 
+    <fieldset id="fieldset1">
+      <legend>How can we support you today?</legend>
+      <div class="form-group">
+        <label for="userRole">Your Role</label>
+        <select id="userRole" name="userRole" required>
+          <option value="">-- Which best describes your role?--</option>
+          <option value="school-staff">School Staff</option>
+          <option value="hq-staff">HQ Staff</option>
+          <option value="student">Student</option>
+          <option value="parent">Parent</option>
+          <option value="others">Others</option>
+        </select>
+      </div>
 
-    <!-- Conditional text if 'Others' is selected -->
-    <div id="otherRoleDiv" style="display:none;">
-      <h3><label for="otherRoleText">Describe your role:</label></h3>
-      <input type="text" id="otherRoleText" name="otherRoleText" style="width: 90%;">
-    </div>
+      <!-- Conditional text if 'Others' is selected -->
+      <div id="otherRoleDiv" class="form-group" style="display:none;">
+        <label for="otherRoleText">Describe your role:</label>
+        <input type="text" id="otherRoleText" name="otherRoleText" style="width: 90%;">
+      </div>
 
-    <h3><label for="issueType">Issue Type</label></h3>
-        <div>
-            <select id="issueType" name="issueType" required>
-            <option value="">-- Select the primary issue you're facing --</option>
-            <option value="login">Login to AE</option>
-            <option value="access-form">Accessing a Form</option>
-            <option value="create-form">Creating a Form</option>
-            <option value="audience">Managing Form Audience</option>
-            <option value="publish">Publishing/Sharing a Form</option>
-            <option value="responses">Managing Responses</option>
-            <option value="collaborators">Managing Collaborators</option>
-            <option value="feature-request">Feature Request</option>
-            <option value="other">Other</option>
-            </select>
-            <small>You can use the free-text box below if there are other issues.</small>
-        </div>
+      <div class="form-group">
+        <label for="issueType">Issue Type</label>
+        <select id="issueType" name="issueType" required>
+          <option value="">-- Select the primary issue you're facing --</option>
+          <option value="login">Login/Accessing a Form</option>
+          <option value="create-form">Creating a Form</option>
+          <option value="audience">Managing Form Audience</option>
+          <option value="publish">Publishing/Sharing a Form</option>
+          <option value="responses">Managing Responses</option>
+          <option value="collaborators">Managing Collaborators</option>
+          <option value="feature-request">Feature Request</option>
+          <option value="other">Other</option>
+        </select>
+        <small>You can use the free-text box below if there are other issues.</small>
+      </div>
 
-        <!-- Relevant Links Section -->
-        <div id="relevantLinks" style="display: none;">
-            <h3>Relevant Links</h3>
-            <ul id="linksList"></ul>
-            <!-- Insert the varying scenario and the UX Copy-->
-            <div>
-                <input type="checkbox" id="confirmReadFAQ" name="confirmReadFAQ" required>
-                <label for="confirmReadFAQ">Yes, I've read the FAQ/guide, but still need support.</label>
-            </div>
-        </div>
+      <!-- Relevant Links Section -->
+      <div id="relevantLinks" style="display: none;" aria-live="polite">
+        <h2>Relevant Links</h2>
+        <ul id="linksList"></ul>
+      </div>
     </fieldset>
 
     <!-- Issue Type -->
-     <fieldset>
-    <legend>Issue Details</legend>
-     <!-- Description Textarea -->
-        <div>
-            <h3><label for="description">Issue Description</label></h3>
-            <textarea id="description" name="description" rows="5" required placeholder="Describe the issue in your own words. Tell us what you expected, what actually happened, and what you've already tried." style="width: 90%;"></textarea>
-        </div>
-
-    <!-- form identifier-->
-        <div>
-            <h3><label for="formName">Form Name</label></h3>
-            <input type="text" id="formName" name="formName" placeholder="Title of the form you're having trouble with" style="width: 90%;">
-            <h3><label for="formURL">Form Link</label></h3>
-            <input type="text" id="formURL" name="formURL" placeholder="Paste the full URL of the form, if available" style="width: 90%;">
-        </div>
-
-    <!-- File Uploads (Screenshot and Video) -->
-        <div>
-            <h3><label for="screenshot">Upload Screenshot (JPG, PNG):</label></h3>
-            <input type="file" id="screenshot" name="screenshot" accept="image/*">
-            <small>Upload a screenshot to help us see what you are seeing.</small>
-        </div>
-
-    
-        <div>
-            <h3><label for="video">Upload Video (optional):</label></h3>
-            <input type="file" id="video" name="video" accept="video/mp4">
-            <small>Upload a screen recording if the issue is complex.</small>
-        </div>
+    <fieldset id="fieldset2" style="display:none;">
+      <legend>Tell us more</legend>
+      <div class="form-group">
+        <label for="description">Issue Description</label>
+        <textarea id="description" name="description" rows="5" required placeholder="Describe the issue in your own words. Tell us what you expected, what actually happened, and what you've already tried." style="width: 90%;"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="formName">Form Name</label>
+        <input type="text" id="formName" name="formName" placeholder="Title of the form you're having trouble with" style="width: 90%;">
+      </div>
+      <div class="form-group">
+        <label for="formURL">Form Link</label>
+        <input type="text" id="formURL" name="formURL" placeholder="Paste the full URL of the form, if available" style="width: 90%;">
+      </div>
+      <div class="form-group">
+        <label for="screenshot">Upload Screenshot (JPG, PNG):</label>
+        <input type="file" id="screenshot" name="screenshot" accept="image/*" multiple>
+        <small>Upload screenshots to help us see what you are seeing.</small>
+      </div>
+      <div class="form-group">
+        <label for="video">Upload Video (optional):</label>
+        <input type="file" id="video" name="video" accept="video/*" multiple>
+        <small>Upload a screen recording if the issue is complex.</small>
+      </div>
     </fieldset>
 
     <!-- Contact information-->
-     <fieldset>
-    <legend>Contact Information</legend>
-        <div>
-            <h3><label for="fullName">Full Name</label></h3>
-            <input type="text" id="fullName" name="fullName" required placeholder="Please enter your full name so that we can identify you correctly" style="width: 90%;">
-        </div>
-        <div>
-            <h3><label for="email">MIMS ID</label></h3>
-            <input type="email" id="email" name="email" required placeholder="Please enter the email address you use when logging into MIMS" style="width: 90%;">
-        </div>
-        <div>
-            <input type="checkbox" id="useMimsAsContact" name="useMimsAsContact">
-            <label for="useMimsAsContact">Use MIMS ID as Contact Email</label>
-        </div>
-        <div>
-            <h3><label for="contactEmail">Contact Email</label></h3>
-            <input type="email" id="contactEmail" name="contactEmail" required placeholder="We'll use this to update you about your request" style="width: 90%;">
-        </div>
-        <div>
-            <h3><label for="school">School Name</label></h3>
-            <input type="text" id="school" name="school">
-        </div>
-
-        <div>
-            <button type="submit" id="submitRequest" style="padding: 10px 20px; font-size: 16px;">Submit Support Request</button>
-        </div>
-     </fieldset>
-
+    <fieldset id="fieldset3" style="display:none;">
+      <legend>Contact Information</legend>
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="fullName" required autocomplete="name" placeholder="Please enter your full name so that we can identify you correctly" style="width: 90%;">
+      </div>
+      <div class="form-group">
+        <label for="email">MIMS ID</label>
+        <input type="email" id="email" name="email" required autocomplete="username" placeholder="Please enter the email address you use when logging into MIMS" style="width: 90%;">
+      </div>
+      <div class="form-group">
+        <input type="checkbox" id="useMimsAsContact" name="useMimsAsContact">
+        <label for="useMimsAsContact">Use MIMS ID as Contact Email</label>
+      </div>
+      <div class="form-group">
+        <label for="contactEmail">Contact Email</label>
+        <input type="email" id="contactEmail" name="contactEmail" required autocomplete="email" placeholder="We'll use this to update you about your request" style="width: 90%;">
+      </div>
+      <div class="form-group">
+        <label for="school">School Name (if relevant)</label>
+        <input type="text" id="school" name="school">
+      </div>
+      <div class="form-group">
+        <button type="submit" id="submitRequest" style="padding: 10px 20px; font-size: 16px;">Submit Support Request</button>
+      </div>
+    </fieldset>
   </form>
 </body>
 </html>
