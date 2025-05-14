@@ -10,18 +10,24 @@
     .form-group { margin-bottom: 1em; }
     label { font-weight: bold; }
     small { display: block; margin-top: 0.25em; }
+    /* Ensure visible focus for accessibility */
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #005fcc;
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body>
   <h1>AllEars Helpdesk</h1>
 
-  <form id="helpdeskForm">
+  <!-- Added action, method, and enctype for HTML form submission -->
+  <form id="helpdeskForm" action="http://localhost:3001/submit" method="POST" enctype="multipart/form-data">
     <!-- User Role -->
     <fieldset id="fieldset1">
       <legend>How can we support you today?</legend>
       <div class="form-group">
         <label for="userRole">Your Role</label>
-        <select id="userRole" name="userRole" required>
+        <select id="userRole" name="userRole" required autocomplete="organization-title">
           <option value="">-- Which best describes your role?--</option>
           <option value="school-staff">School Staff</option>
           <option value="hq-staff">HQ Staff</option>
@@ -34,7 +40,7 @@
       <!-- Conditional text if 'Others' is selected -->
       <div id="otherRoleDiv" class="form-group" style="display:none;">
         <label for="otherRoleText">Describe your role:</label>
-        <input type="text" id="otherRoleText" name="otherRoleText" style="width: 90%;">
+        <input type="text" id="otherRoleText" name="otherRoleText" style="width: 90%;" autocomplete="organization-title">
       </div>
 
       <div class="form-group">
@@ -77,13 +83,13 @@
       </div>
       <div class="form-group">
         <label for="screenshot">Upload Screenshot (JPG, PNG):</label>
-        <input type="file" id="screenshot" name="screenshot" accept="image/*" multiple>
-        <small>Upload screenshots to help us see what you are seeing.</small>
+        <input type="file" id="screenshot" name="screenshot" accept="image/*" multiple aria-describedby="screenshot-desc">
+        <small id="screenshot-desc">Upload screenshots to help us see what you are seeing.</small>
       </div>
       <div class="form-group">
         <label for="video">Upload Video (optional):</label>
-        <input type="file" id="video" name="video" accept="video/*" multiple>
-        <small>Upload a screen recording if the issue is complex.</small>
+        <input type="file" id="video" name="video" accept="video/*" multiple aria-describedby="video-desc">
+        <small id="video-desc">Upload a screen recording if the issue is complex.</small>
       </div>
     </fieldset>
 
@@ -108,7 +114,7 @@
       </div>
       <div class="form-group">
         <label for="school">School Name (if relevant)</label>
-        <input type="text" id="school" name="school">
+        <input type="text" id="school" name="school" autocomplete="organization">
       </div>
       <div class="form-group">
         <button type="submit" id="submitRequest" style="padding: 10px 20px; font-size: 16px;">Submit Support Request</button>
