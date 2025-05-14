@@ -14,14 +14,12 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // Enable CORS for local frontend
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname));
 
 // Serve the index.html file at the root URL
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
-
-// Serve all static files from the project root
-app.use(express.static(path.join(__dirname, '../')));
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
