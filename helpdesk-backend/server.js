@@ -64,10 +64,44 @@ app.post('/submit', upload.fields([{ name: 'screenshot' }, { name: 'video' }]), 
       attachments
     });
 
-    res.status(200).json({ message: 'Submission received and email sent!' });
+    // Respond with a success HTML page
+    res.send(`
+      <html>
+        <head>
+          <title>Submission Successful</title>
+          <style>
+            body { font-family: sans-serif; text-align: center; margin-top: 5em; }
+            .success { color: green; font-size: 1.5em; }
+          </style>
+        </head>
+        <body>
+          <div class="success">🎉 Your request has been submitted successfully!<br>
+          Check your inbox for confirmation — our team will follow up shortly.</div>
+          <br>
+          <a href="/">Back to Helpdesk Form</a>
+        </body>
+      </html>
+    `);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Something went wrong' });
+    // Respond with an error HTML page
+    res.status(500).send(`
+      <html>
+        <head>
+          <title>Submission Error</title>
+          <style>
+            body { font-family: sans-serif; text-align: center; margin-top: 5em; }
+            .error { color: red; font-size: 1.5em; }
+          </style>
+        </head>
+        <body>
+          <div class="error">⚠️ Oops! Something went wrong while submitting your request.<br>
+          Please try again or email us directly at <a href="mailto:allears@estl.edu.sg">allears@estl.edu.sg</a></div>
+          <br>
+          <a href="/">Back to Helpdesk Form</a>
+        </body>
+      </html>
+    `);
   }
 });
 
