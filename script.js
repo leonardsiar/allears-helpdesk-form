@@ -121,4 +121,6 @@ screenshotInput.addEventListener("change", () => {
       errorDiv.textContent = "Network error. Please try again.";
     }
   });
+  const fs = require('fs');
+fs.writeFileSync('email-preview.html', htmlBody);
 });

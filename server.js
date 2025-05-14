@@ -58,7 +58,10 @@ app.post(
   [
     body('userRole').trim().notEmpty(),
     body('issueType').trim().notEmpty(),
-    body('description').trim().isLength({ min: 10 }),
+    body('description')
+      .trim()
+      .isLength({ min: 50 })
+      .withMessage('Issue description must be at least 50 characters.'),
     body('fullName').trim().escape(),
     body('email').isEmail().normalizeEmail(),
     body('contactEmail').isEmail().normalizeEmail(),
@@ -129,6 +132,9 @@ app.post(
         <p><strong>Form:</strong> ${data.formName} (<a href="${data.formURL}">${data.formURL}</a>)</p>
         <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
       `;
+      console.log("=== EMAIL PREVIEW ===");
+      console.log(htmlBody);
+      console.log("=====================");
 
       await resend.emails.send({
         from: process.env.EMAIL_FROM, // e.g. "AllEars Helpdesk <support@yourdomain.com>"
