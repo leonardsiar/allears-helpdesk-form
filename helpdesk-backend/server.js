@@ -12,6 +12,14 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+// Serve the index.html file at the root URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
+
+// Serve all static files from the project root
+app.use(express.static(path.join(__dirname, '../')));
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
