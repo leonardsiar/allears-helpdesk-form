@@ -63,18 +63,19 @@ form {
 }
 
 .form-group {
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   display: flex;
   flex-direction: column;
 }
 
-.form-group[style*="flex"] {
+.form-group-inline {
   justify-content: flex-start;   /* Ensures left alignment */
   align-items: center;           /* Ensures vertical centering */
   gap: 8px;                      /* Space between checkbox and label */
+    margin-bottom: 16px;          /* Space below the group */
 }
 
-.form-group[style*="flex"] label {
+.form-group label {
   margin-bottom: 0;
   font-weight: 600;
   font-size: 1.1rem;
