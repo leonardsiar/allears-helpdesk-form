@@ -33,13 +33,18 @@ document.addEventListener("DOMContentLoaded", function () {
     relevantLinksDiv.style.display = "none";
     fieldset2.style.display = "none";
 
-    if (!role || !issue) return;
+    // If issue is "feature-request" or "other", skip FAQ/checkbox and show fieldset2 after delay
+    if (issue === "feature-request" || issue === "other") {
+      setTimeout(() => {
+        fieldset2.style.display = "block";
+      }, 500); // 500ms delay
+      return;
+    }
 
     const guide = guidanceMatrix[role]?.[issue];
     if (guide) {
       let html = "";
       if (guide.url) {
-        // Extract the keyword from the title (e.g., "login" from 'Frequently asked questions about "login"')
         let linkText = guide.title.match(/"([^"]+)"/);
         linkText = linkText ? linkText[1] : guide.title;
         html = `<li>
