@@ -90,10 +90,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Show fieldset 3 when a screenshot is uploaded
-const screenshotInput = document.getElementById("screenshot");
-screenshotInput.addEventListener("change", () => {
-  fieldset3.style.display = screenshotInput.files.length > 0 ? "block" : "none";
-});
+  const screenshotInput = document.getElementById("screenshot");
+  screenshotInput.addEventListener("change", () => {
+    fieldset3.style.display = screenshotInput.files.length > 0 ? "block" : "none";
+  });
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -102,7 +102,7 @@ screenshotInput.addEventListener("change", () => {
     const formData = new FormData(form);
 
     try {
-      const response = await fetch(form.action, {
+      const response = await fetch('https://allears-helpdesk-form.onrender.com/submit', {
         method: 'POST',
         body: formData,
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -132,6 +132,4 @@ screenshotInput.addEventListener("change", () => {
       errorDiv.textContent = "Network error. Please try again.";
     }
   });
-  const fs = require('fs');
-fs.writeFileSync('email-preview.html', htmlBody);
 });
