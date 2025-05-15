@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AllEars Helpdesk</title>
+  <link rel="stylesheet" href="style.css">
   <script src="guidanceMatrix.js"></script>
   <script src="script.js" defer></script>
   <style>
@@ -14,6 +15,11 @@
     input:focus, select:focus, textarea:focus {
       outline: 2px solid #005fcc;
       outline-offset: 2px;
+    }
+    .required {
+      color: #DC2626;
+      margin-left: 2px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -29,7 +35,7 @@
     <fieldset id="fieldset1">
       <legend>How can we support you today?</legend>
       <div class="form-group">
-        <label for="userRole">Your Role</label>
+        <label for="userRole">Your Role <span class="required">*</span></label>
         <select id="userRole" name="userRole" required autocomplete="organization-title">
           <option value="">-- Which best describes your role?--</option>
           <option value="school-staff">School Staff</option>
@@ -47,7 +53,7 @@
       </div>
 
       <div class="form-group">
-        <label for="issueType">Issue Type</label>
+        <label for="issueType">Issue Type <span class="required">*</span></label>
         <select id="issueType" name="issueType" required>
           <option value="">-- Select the primary issue you're facing --</option>
           <option value="login">Login/Accessing a Form</option>
@@ -71,9 +77,9 @@
 
     <!-- Issue Type -->
     <fieldset id="fieldset2" style="display:none;">
-      <legend>Tell us more</legend>
+      <legend>Tell us more <span class="required">*</span></legend>
       <div class="form-group">
-        <label for="description">Issue Description</label>
+        <label for="description">Issue Description <span class="required">*</span></label>
         <textarea id="description" name="description" rows="5" required placeholder="Describe the issue in your own words. Tell us what you expected, what actually happened, and what you've already tried." style="width: 90%;"></textarea>
       </div>
       <div class="form-group">
@@ -85,8 +91,8 @@
         <input type="text" id="formURL" name="formURL" placeholder="Paste the full URL of the form, if available" style="width: 90%;">
       </div>
       <div class="form-group">
-        <label for="screenshot">Upload Screenshot (JPG, PNG):</label>
-        <input type="file" id="screenshot" name="screenshot" accept="image/*" multiple aria-describedby="screenshot-desc">
+        <label for="screenshot">Upload Screenshot (JPG, PNG) <span class="required">*</span></label>
+        <input type="file" id="screenshot" name="screenshot" accept="image/*" multiple aria-describedby="screenshot-desc" required>
         <small id="screenshot-desc">Upload screenshots to help us see what you are seeing.</small>
       </div>
       <div class="form-group">
@@ -100,25 +106,29 @@
     <fieldset id="fieldset3" style="display:none;">
       <legend>Contact Information</legend>
       <div class="form-group">
-        <label for="fullName">Full Name</label>
+        <label for="fullName">Full Name <span class="required">*</span></label>
         <input type="text" id="fullName" name="fullName" required autocomplete="name" placeholder="Please enter your full name so that we can identify you correctly" style="width: 90%;">
       </div>
       <div class="form-group">
-        <label for="email">MIMS ID</label>
+        <label for="email">MIMS ID <span class="required">*</span></label>
         <input type="email" id="email" name="email" required autocomplete="username" placeholder="Please enter the email address you use when logging into MIMS" style="width: 90%;">
       </div>
-      <div class="form-group">
+      <div class="form-group" style="display: flex; align-items: center;">
         <input type="checkbox" id="useMimsAsContact" name="useMimsAsContact">
         <label for="useMimsAsContact">Use MIMS ID as Contact Email</label>
       </div>
       <div class="form-group">
-        <label for="contactEmail">Contact Email</label>
+        <label for="contactEmail">Contact Email <span class="required">*</span></label>
         <input type="email" id="contactEmail" name="contactEmail" required autocomplete="email" placeholder="We'll use this to update you about your request" style="width: 90%;">
       </div>
       <div class="form-group">
         <label for="school">School Name (if relevant)</label>
         <input type="text" id="school" name="school" autocomplete="organization">
       </div>
+      
+      <!-- Move the error banner here, just above the submit button -->
+      <div id="formErrors" style="color: red; margin-bottom: 1em;"></div>
+      
       <div class="form-group">
         <button type="submit" id="submitRequest" style="padding: 10px 20px; font-size: 16px;">Submit Support Request</button>
       </div>

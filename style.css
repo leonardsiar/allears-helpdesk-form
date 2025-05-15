@@ -1,0 +1,250 @@
+/* ====== Base Colors ====== */
+:root {
+  --primary: #1D4ED8;
+  --primary-hover: #1E40AF;
+  --success: #10B981;
+  --error: #DC2626;
+  --text: #111827;
+  --muted: #6B7280;
+  --background: #F9FAFB;
+  --border: #E5E7EB;
+}
+
+/* ====== Typography ====== */
+html {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  background: var(--background);
+  color: var(--text);
+}
+
+h1, h2, h3, legend {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--primary);
+}
+
+h1 {
+  font-size: 2rem;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+small, .muted {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* ====== Layout & Spacing ====== */
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+}
+
+form {
+  max-width: 600px;
+  width: 100%;
+  margin: 32px auto;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.04);
+  padding: 24px 32px;       /* Slightly more padding for desktop */
+  box-sizing: border-box;  
+}
+
+.form-group {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group[style*="flex"] {
+  justify-content: flex-start;   /* Ensures left alignment */
+  align-items: center;           /* Ensures vertical centering */
+  gap: 8px;                      /* Space between checkbox and label */
+}
+
+.form-group[style*="flex"] label {
+  margin-bottom: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+legend {
+  font-size: 1.125rem;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+/* ====== Inputs ====== */
+input[type="text"],
+input[type="email"],
+input[type="url"],
+textarea,
+select {
+  font-size: 1rem;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--text);
+  margin-top: 4px;
+  margin-bottom: 4px;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+/* ====== Buttons ====== */
+button,
+input[type="submit"] {
+  background: var(--primary);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+  min-width: 120px;
+  min-height: 48px;
+}
+
+button:hover,
+input[type="submit"]:hover {
+  background: var(--primary-hover);
+}
+
+/* ====== FAQ Cards ====== */
+#relevantLinks {
+  background: #EFF6FF; /* very light blue, or use var(--background) for subtle */
+  border: 1.5px solid var(--primary);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(30, 64, 175, 0.06);
+  padding: 0 16px 16px 16px;
+  margin-bottom: 24px;
+}
+
+#relevantLinks h2 {
+  color: var(--text);
+  font-size: 1.125rem;
+  margin-top: 0;            /* Remove top margin */
+  margin-bottom: 8px;
+  padding-top: 16px;        /* Optional: add a little space if needed */
+}
+
+#linksList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#linksList li {
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+#linksList a {
+  color: var(--primary);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+#linksList a:hover {
+  color: var(--primary-hover);
+}
+
+#linksList div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ====== Success & Error Messages ====== */
+#formErrors,
+.error {
+  color: var(--error);
+  background: #fff0f0;
+  border: 1px solid var(--error);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 1rem;
+}
+
+#formErrors:empty {
+  display: none;
+}
+
+.success {
+  color: var(--success);
+  background: #f0fff7;
+  border: 1px solid var(--success);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 1rem;
+}
+
+/* ====== Misc ====== */
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary);
+  margin-right: 8px;
+}
+
+@media (max-width: 600px) {
+  form {
+    max-width: 100%;
+    padding: 16px 4px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  fieldset {
+    margin-bottom: 16px;
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  button,
+  input[type="submit"] {
+    width: 100%;
+    min-width: 0;
+  }
+}

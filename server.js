@@ -72,7 +72,11 @@ app.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // Collect error messages
+      // If AJAX, return JSON
+      if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      // Otherwise, return HTML as before
       const errorList = errors.array().map(err => `<li>${err.msg} (${err.param})</li>`).join('');
       return res.status(400).send(`
         <html>

@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const label = document.createElement("label");
         label.htmlFor = "confirmReadFAQ";
-        label.textContent = "Yes, I've read the FAQ/guide, but still need support.";
+        label.innerHTML = "Yes, I've read the FAQ/guide, but still need support. <span class='required'>*</span>";
 
         const container = document.createElement("div");
         container.appendChild(checkbox);
@@ -104,20 +104,26 @@ screenshotInput.addEventListener("change", () => {
     try {
       const response = await fetch(form.action, {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
       });
 
       if (!response.ok) {
-        const html = await response.text();
-        // Try to extract errors from the HTML response
-        const match = html.match(/<ul>([\s\S]*?)<\/ul>/);
-        if (match) {
-          errorDiv.innerHTML = `<ul>${match[1]}</ul>`;
-        } else {
-          errorDiv.textContent = "An unknown error occurred.";
+        // Try to parse JSON error response
+        let errorMsg = "An unknown error occurred.";
+        try {
+          const data = await response.json();
+          if (data.errors && Array.isArray(data.errors)) {
+            errorMsg = "<ul>" + data.errors.map(e => `<li>${e.msg}</li>`).join('') + "</ul>";
+          }
+        } catch {
+          // fallback to HTML extraction if not JSON
+          const html = await response.text();
+          const match = html.match(/<ul>([\s\S]*?)<\/ul>/);
+          if (match) errorMsg = `<ul>${match[1]}</ul>`;
         }
+        errorDiv.innerHTML = errorMsg;
       } else {
-        // On success, show a message or redirect
         form.reset();
         errorDiv.style.color = "green";
         errorDiv.innerHTML = "🎉 Your request has been submitted successfully! Check your inbox for confirmation.";
