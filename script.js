@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const label = document.createElement("label");
         label.htmlFor = "confirmReadFAQ";
-        label.innerHTML = "Yes, I've read the FAQ/guide, but still need support. <span class='required'>*</span>";
+        label.innerHTML = "Yes, I have tried the recommended self-help resources (such as the FAQ, speaking to someone), but I still need support. <span class='required'>*</span>";
 
         const container = document.createElement("div");
         container.appendChild(checkbox);
