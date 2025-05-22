@@ -152,9 +152,8 @@ app.post(
         <p><strong>Role:</strong> ${data.userRole}</p>
         <p><strong>School:</strong> ${data.school}</p>
         <p><strong>Issue:</strong> ${data.issueType}</p>
-        ${guideInfo}
+        <p><strong>FAQ read:</strong><a href="${guide.url}">${guide.title}</a></p>
         <p><strong>Description:</strong><br>${data.description}</p>
-        <p><strong>Form:</strong> ${data.formName} (<a href="${data.formURL}">${data.formURL}</a>)</p>
         <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
       `;
       console.log("=== EMAIL PREVIEW ===");
@@ -178,23 +177,24 @@ app.post(
           <meta charset="UTF-8">
           <title>Submission Successful</title>
           <link rel="stylesheet" href="style.css">
-          <style>
-            body { font-family: sans-serif; text-align: center; margin-top: 5em; }
-            .success { color: green; font-size: 1.5em; }
-            .preview { text-align: left; margin: 2em auto; max-width: 600px; background: #f9f9f9; border-radius: 8px; padding: 1em; border: 1px solid #eee; }
-          </style>
         </head>
         <body>
-          <div class="success">
-            🎉 Thanks! Your request has been successfully submitted.<br>
+          <h1>All Ears Helpdesk</h1>
+          <div class="success" style="max-width:520px;margin:32px auto 24px auto;">
+            🎉 <strong>Thanks! Your request has been successfully submitted.</strong><br>
             We’ve received your details and our team will follow up shortly.<br>
-            🕒 You can expect a response within 1–2 working days.
+            <span style="font-size:0.98em;">🕒 You can expect a response within 1–2 working days.</span>
           </div>
-          <div class="preview">
+          <div class="email-summary">
             <h3>Email sent to helpdesk:</h3>
             ${emailPreview}
           </div>
-          <a href="/">Back to Helpdesk Form</a>
+          <div class="actions">
+            <a href="/" class="btn-home" style="background: var(--primary); color: #fff; font-size: 1.1rem; font-weight: 600; padding: 12px 28px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(30, 64, 175, 0.08); transition: background 0.2s, box-shadow 0.2s;">
+              🏠 Back to Helpdesk Home
+            </a>
+            <button type="button" id="submitRequest" onclick="window.location='/'">🏠 Back to Helpdesk Home</button>
+          </div>
         </body>
         </html>
       `);

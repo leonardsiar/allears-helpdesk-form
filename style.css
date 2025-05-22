@@ -326,3 +326,28 @@ input[type="checkbox"] {
   margin-left: 2px;
   font-weight: bold;
 }
+
+/* Add to style.css /success page*/
+.email-summary {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.08);
+  border: 1px solid var(--border);
+  max-width: 600px;
+  margin: 32px auto 24px auto;
+  padding: 24px 28px;
+  text-align: left;
+  font-size: 1rem;
+  color: var(--text);
+}
+.email-summary h3 {
+  margin-top: 0;
+  color: var(--primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
