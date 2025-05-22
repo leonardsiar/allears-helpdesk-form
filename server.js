@@ -14,6 +14,11 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 app.set('trust proxy', 1);
 
+// test /submit page HTML
+app.get('/success', (req, res) => {
+  res.sendFile(path.join(__dirname, 'testsuccess.html'));
+});
+
 // Enable CORS for local frontend
 app.use(cors());
 app.use(express.json());

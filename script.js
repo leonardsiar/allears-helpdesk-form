@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
       linksList.innerHTML = html;
       relevantLinksDiv.style.display = "block";
 
-      // Checkbox logic (unchanged)
+      // Checkbox logic
       if (!document.getElementById("confirmReadFAQ")) {
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -106,15 +106,66 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Show fieldset 3 when a screenshot is uploaded
-  const screenshotInput = document.getElementById("screenshot");
-  screenshotInput.addEventListener("change", () => {
-    fieldset3.style.display = screenshotInput.files.length > 0 ? "block" : "none";
+  //const screenshotInput = document.getElementById("screenshot");
+  //screenshotInput.addEventListener("change", () => {
+   // fieldset3.style.display = screenshotInput.files.length > 0 ? "block" : "none";
+  //});
+  // Show fieldset 3 when description is filled
+  description.addEventListener("input", () => {
+    fieldset3.style.display = description.value.trim() !== "" ? "block" : "none";
   });
 
-  // Remove or comment out this block in script.js
-  // form.addEventListener('submit', async function (e) {
-  //   e.preventDefault();
-  //   ...all the AJAX code...
-  // });
+  // --- TESTING: Auto-fill form with random/sample data ---
+  function randomFrom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
 
+  function randomString(len = 8) {
+    return Math.random().toString(36).substring(2, 2 + len);
+  }
+
+  function randomEmail() {
+    return `user${Math.floor(Math.random() * 10000)}@example.com`;
+  }
+
+  function randomSentence(wordCount = 20) {
+    const words = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua".split(" ");
+    let s = [];
+    for (let i = 0; i < wordCount; i++) s.push(randomFrom(words));
+    return s.join(" ") + ".";
+  }
+
+  function fillTestData() {
+    userRole.value = randomFrom(["school-staff", "hq-staff", "student", "parent", "others"]);
+    if (userRole.value === "others") {
+      otherRoleDiv.style.display = "block";
+      document.getElementById("otherRoleText").value = randomString(10);
+    }
+    issueType.value = randomFrom([
+      "login", "create-form", "audience", "publish", "responses", "collaborators", "feature-request", "other"
+    ]);
+    description.value = randomSentence(20) + " " + randomSentence(20);
+    document.getElementById("formName").value = "Test Form " + randomString(4);
+    document.getElementById("formURL").value = "https://example.com/form/" + randomString(6);
+    document.getElementById("fullName").value = "Test User " + randomString(3);
+    document.getElementById("email").value = randomEmail();
+    document.getElementById("contactEmail").value = randomEmail();
+    document.getElementById("school").value = "Test School " + randomString(2);
+
+    // If you want to auto-check the "Use MIMS as Contact" box randomly:
+    useMimsCheckbox.checked = Math.random() > 0.5;
+    if (useMimsCheckbox.checked) {
+      contactEmail.value = mimsEmail.value;
+    }
+
+    // Trigger change events to update conditional fields
+    userRole.dispatchEvent(new Event("change"));
+    issueType.dispatchEvent(new Event("change"));
+  }
+  // Fill test data button
+  const fillTestDataButton = document.getElementById("fillTestData");
+  fillTestDataButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    fillTestData();
+  });
 });

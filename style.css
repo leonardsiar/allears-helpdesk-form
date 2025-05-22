@@ -351,3 +351,20 @@ input[type="checkbox"] {
   justify-content: center;
   margin-top: 32px;
 }
+
+#fillTestData {
+  display: block;
+  margin: 18px auto 0 auto;
+  padding: 4px 16px;
+  font-size: 0.95rem;
+  background: #e5e7eb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+#fillTestData:hover {
+  background: #d1d5db;
+  color: #111827;
+}
