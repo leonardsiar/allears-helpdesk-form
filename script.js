@@ -12,6 +12,39 @@ document.addEventListener("DOMContentLoaded", function () {
   const fieldset3 = document.getElementById("fieldset3");
   const form = document.getElementById('helpdeskForm');
   const errorDiv = document.getElementById('formErrors');
+  const clickedFAQInput = document.getElementById('clickedFAQ');
+  const guide = guidanceMatrix[role]?.[issue];
+
+   // Track FAQ link clicks with Google Analytics and sessionStorage
+  if (linksList) {
+    linksList.addEventListener("click", function (e) {
+      if (e.target.tagName === "A" && e.target.href) {
+        // Google Analytics event
+        if (typeof gtag === "function") {
+          gtag('event', 'faq_link_click', {
+            'event_category': 'Helpdesk FAQ',
+            'event_label': e.target.href
+          });
+        }
+        // Mark that this user clicked a FAQ link in this session
+        sessionStorage.setItem('clickedFAQ', '1');
+      }
+    });
+  }
+
+  // Track form submissions and whether FAQ was clicked
+  if (form) {
+    form.addEventListener('submit', function () {
+      if (typeof gtag === "function") {
+        gtag('event', 'form_submit', {
+          'event_category': 'Helpdesk',
+          'event_label': sessionStorage.getItem('clickedFAQ') === '1' ? 'FAQ Clicked' : 'No FAQ Click'
+        });
+      }
+      // Optionally clear the flag after submit
+      sessionStorage.removeItem('clickedFAQ');
+    });
+  }
 
   // Show/hide "Describe your role" field
   userRole.addEventListener("change", () => {
@@ -41,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const guide = guidanceMatrix[role]?.[issue];
+   
     if (guide) {
       let html = "";
       if (guide.url) {
@@ -115,6 +148,16 @@ document.addEventListener("DOMContentLoaded", function () {
     fieldset3.style.display = description.value.trim() !== "" ? "block" : "none";
   });
 
+
+  // hidden input to track clicked FAQ link
+  if (linksList) {
+  linksList.addEventListener("click", function (e) {
+    if (e.target.tagName === "A" && e.target.href) {
+      // ...existing analytics code...
+      if (clickedFAQInput) clickedFAQInput.value = "yes";
+    }
+  });
+}
   // --- TESTING: Auto-fill form with random/sample data ---
   function randomFrom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];

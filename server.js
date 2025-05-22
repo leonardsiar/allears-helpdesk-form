@@ -11,6 +11,7 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
+const clickedFAQ = data.clickedFAQ === "yes" ? "Yes" : "No";
 
 app.set('trust proxy', 1);
 
@@ -158,6 +159,7 @@ app.post(
         <p><strong>School:</strong> ${data.school}</p>
         <p><strong>Issue:</strong> ${data.issueType}</p>
         ${guideInfo}
+        <p><strong>Clicked FAQ before submitting:</strong> ${clickedFAQ}</p>
         <p><strong>Description:</strong><br>${data.description}</p>
         <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
       `;
