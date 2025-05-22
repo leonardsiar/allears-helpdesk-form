@@ -111,42 +111,10 @@ document.addEventListener("DOMContentLoaded", function () {
     fieldset3.style.display = screenshotInput.files.length > 0 ? "block" : "none";
   });
 
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    errorDiv.innerHTML = ""; // Clear previous errors
-
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch('https://allears-helpdesk-form.onrender.com/submit', {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      });
-
-      if (!response.ok) {
-        // Try to parse JSON error response
-        let errorMsg = "An unknown error occurred.";
-        try {
-          const data = await response.json();
-          if (data.errors && Array.isArray(data.errors)) {
-            errorMsg = "<ul>" + data.errors.map(e => `<li>${e.msg}</li>`).join('') + "</ul>";
-          }
-        } catch {
-          // fallback to HTML extraction if not JSON
-          const html = await response.text();
-          const match = html.match(/<ul>([\s\S]*?)<\/ul>/);
-          if (match) errorMsg = `<ul>${match[1]}</ul>`;
-        }
-        errorDiv.innerHTML = errorMsg;
-      } else {
-        form.reset();
-        errorDiv.style.color = "green";
-        errorDiv.innerHTML = "🎉 Your request has been submitted successfully! Check your inbox for confirmation.";
-      }
-    } catch (err) {
-      errorDiv.textContent = "Network error. Please try again.";
-    }
-  });
+  // Remove or comment out this block in script.js
+  // form.addEventListener('submit', async function (e) {
+  //   e.preventDefault();
+  //   ...all the AJAX code...
+  // });
 
 });

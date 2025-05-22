@@ -24,6 +24,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+app.get('/success', (req, res) => {
+  res.sendFile(path.join(__dirname, 'success.html'));
+});
+
 // Configure multer for file uploads
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -78,11 +82,7 @@ app.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // If AJAX, return JSON
-      if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      // Otherwise, return HTML as before
+      // Return HTML error page
       const errorList = errors.array().map(err => `<li>${err.msg} (${err.param})</li>`).join('');
       return res.status(400).send(`
         <html>
@@ -164,27 +164,38 @@ app.post(
       await resend.emails.send({
         from: process.env.EMAIL_FROM, // e.g. "AllEars Helpdesk <support@yourdomain.com>"
         to: process.env.EMAIL_TO,
-        subject: `Helpdesk Ticket: ${data.userRole} | ${data.issueType}`,
+        subject: `Helpdesk Ticket: ${data.fullName} | ${data.userRole} | ${data.issueType}`,
         html: htmlBody,
         attachments
       });
 
-      // Respond with a success HTML page
+      // After sending the email, render the success page with the email preview
+      const emailPreview = htmlBody; // This is your email HTML content
       res.send(`
-        <html>
-          <head>
-            <title>Submission Successful</title>
-            <style>
-              body { font-family: sans-serif; text-align: center; margin-top: 5em; }
-              .success { color: green; font-size: 1.5em; }
-            </style>
-          </head>
-          <body>
-            <div class="success">🎉 Your request has been submitted successfully!<br>
-            Check your inbox for confirmation — our team will follow up shortly.</div>
-            <br>
-            <a href="/">Back to Helpdesk Form</a>
-          </body>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <title>Submission Successful</title>
+          <link rel="stylesheet" href="style.css">
+          <style>
+            body { font-family: sans-serif; text-align: center; margin-top: 5em; }
+            .success { color: green; font-size: 1.5em; }
+            .preview { text-align: left; margin: 2em auto; max-width: 600px; background: #f9f9f9; border-radius: 8px; padding: 1em; border: 1px solid #eee; }
+          </style>
+        </head>
+        <body>
+          <div class="success">
+            🎉 Thanks! Your request has been successfully submitted.<br>
+            We’ve received your details and our team will follow up shortly.<br>
+            🕒 You can expect a response within 1–2 working days.
+          </div>
+          <div class="preview">
+            <h3>Email sent to helpdesk:</h3>
+            ${emailPreview}
+          </div>
+          <a href="/">Back to Helpdesk Form</a>
+        </body>
         </html>
       `);
     } catch (error) {
