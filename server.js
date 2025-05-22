@@ -157,7 +157,7 @@ app.post(
         <p><strong>Role:</strong> ${data.userRole}</p>
         <p><strong>School:</strong> ${data.school}</p>
         <p><strong>Issue:</strong> ${data.issueType}</p>
-        <p><strong>FAQ read:</strong>${guideInfo}</p>
+        ${guideInfo}
         <p><strong>Description:</strong><br>${data.description}</p>
         <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
       `;
@@ -191,13 +191,10 @@ app.post(
             <span style="font-size:0.98em;">🕒 You can expect a response within 1–2 working days.</span>
           </div>
           <div class="email-summary">
-            <h3>Email sent to helpdesk:</h3>
+            <h3 class="email-header">Email sent to helpdesk:</h3>
             ${emailPreview}
           </div>
           <div class="actions">
-            <a href="/" class="btn-home" style="background: var(--primary); color: #fff; font-size: 1.1rem; font-weight: 600; padding: 12px 28px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(30, 64, 175, 0.08); transition: background 0.2s, box-shadow 0.2s;">
-              🏠 Back to Helpdesk Home
-            </a>
             <button type="button" id="submitRequest" onclick="window.location='/'">🏠 Back to Helpdesk Home</button>
           </div>
         </body>

@@ -327,9 +327,9 @@ input[type="checkbox"] {
   font-weight: bold;
 }
 
-/* Add to style.css /success page*/
+/* success page*/
 .email-summary {
-  background: #fff;
+  background: lightgrey;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(30, 64, 175, 0.08);
   border: 1px solid var(--border);
@@ -340,9 +340,17 @@ input[type="checkbox"] {
   font-size: 1rem;
   color: var(--text);
 }
+
+.email-header h3 {
+  color: rgb(45, 45, 45);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
 .email-summary h3 {
   margin-top: 0;
-  color: var(--primary);
+  color: rgb(45, 45, 45);
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -352,6 +360,7 @@ input[type="checkbox"] {
   margin-top: 32px;
 }
 
+/* ====== Fill Test Data Button ====== */
 #fillTestData {
   display: block;
   margin: 18px auto 0 auto;
