@@ -47,15 +47,24 @@ document.addEventListener("DOMContentLoaded", function () {
       if (guide.url) {
         let linkText = guide.title.match(/"([^"]+)"/);
         linkText = linkText ? linkText[1] : guide.title;
-        html = `<li>
-          <a href="${guide.url}" target="_blank"><strong>${linkText}</strong></a>
-        </li>`;
+        html = `
+          <li>
+            <a href="${guide.url}" target="_blank" class="link-card">
+              <strong>${linkText} ↗</strong>
+            </a>
+          </li>
+        `;
       } else if (guide.title) {
-        html = `<li>${guide.title}</li>`;
+        html = `
+          <li>
+            <div class="link-card non-clickable-link-card">${guide.title}</div>
+          </li>
+        `;
       }
       linksList.innerHTML = html;
       relevantLinksDiv.style.display = "block";
 
+      // Checkbox logic (unchanged)
       if (!document.getElementById("confirmReadFAQ")) {
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -63,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const label = document.createElement("label");
         label.htmlFor = "confirmReadFAQ";
-        label.innerHTML = "Yes, I have tried the recommended self-help resources (such as the FAQ, speaking to someone), but I still need support. <span class='required'>*</span>";
+        label.innerHTML = "Yes I've tried, but I still need support. <span class='required'>*</span>";
 
         const container = document.createElement("div");
         container.appendChild(checkbox);

@@ -17,21 +17,6 @@
 
   gtag('config', 'G-BNWQZX14TQ');
 </script>
-  <style>
-    .form-group { margin-bottom: 1em; }
-    label { font-weight: bold; }
-    small { display: block; margin-top: 0.25em; }
-    /* Ensure visible focus for accessibility */
-    input:focus, select:focus, textarea:focus {
-      outline: 2px solid #005fcc;
-      outline-offset: 2px;
-    }
-    .required {
-      color: #DC2626;
-      margin-left: 2px;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
   <h1>All Ears Helpdesk</h1>
@@ -40,7 +25,10 @@
   <form id="helpdeskForm" action="/submit" method="POST" enctype="multipart/form-data">
     <!-- User Role -->
     <fieldset id="fieldset1">
-      <legend>How can we support you today?</legend>
+      <div class="section-header">
+        <span role="img" aria-label="Support"></span>
+        <legend>🙋‍♂️ How can we support you today?</legend>
+      </div>
       <div class="form-group">
         <label for="userRole">Your Role <span class="required">*</span></label>
         <select id="userRole" name="userRole" required autocomplete="organization-title">
@@ -77,17 +65,24 @@
 
       <!-- Relevant Links Section -->
       <div id="relevantLinks" style="display: none;" aria-live="polite">
-        <h2>Relevant Links</h2>
+        <div class="section-header">
+          <span role="img" aria-label="Links"></span>
+          <h2>📘 Related Support Articles </h2>
+        </div>
+        <p class="small">Based on your issue, these resources might help you find a solution faster:</p>
         <ul id="linksList"></ul>
       </div>
     </fieldset>
 
     <!-- Issue Type -->
     <fieldset id="fieldset2" style="display:none;">
-      <legend>Tell us more <span class="required">*</span></legend>
+      <div class="section-header">
+        <span role="img" aria-label="Describe"></span>
+        <legend>📝 Tell us more</legend>
+      </div>
       <div class="form-group">
         <label for="description">Issue Description <span class="required">*</span></label>
-        <textarea id="description" name="description" rows="5" required placeholder="Describe the issue in your own words. Tell us what you expected, what actually happened, and what you've already tried." style="width: 90%;"></textarea>
+        <textarea type="text" id="description" name="description" rows="5" required placeholder="Describe the issue in your own words. Tell us what you expected, what actually happened, and what you've already tried." style="width: 90%;"></textarea>
       </div>
       <div class="form-group">
         <label for="formName">Form Name</label>
@@ -97,6 +92,7 @@
         <label for="formURL">Form Link</label>
         <input type="text" id="formURL" name="formURL" placeholder="Paste the full URL of the form, if available" style="width: 90%;">
       </div>
+  
       <div class="form-group">
         <label for="screenshot">Upload Screenshot (JPG, PNG) <span class="required">*</span></label>
         <input type="file" id="screenshot" name="screenshot" accept="image/*" multiple aria-describedby="screenshot-desc" required>
@@ -111,9 +107,12 @@
 
     <!-- Contact information-->
     <fieldset id="fieldset3" style="display:none;">
-      <legend>Contact Information</legend>
+      <div class="section-header">
+        <span role="img" aria-label="Contact"></span>
+        <legend>📧 Contact Information</legend>
+      </div>
       <div class="form-group">
-        <label for="fullName">Full Name <span class="required">*</span></label>
+        <label for="fullName">What name should we use when contacting you? <span class="required">*</span></label>
         <input type="text" id="fullName" name="fullName" required autocomplete="name" placeholder="Please enter your full name so that we can identify you correctly" style="width: 90%;">
       </div>
       <div class="form-group">
@@ -137,7 +136,7 @@
       <div id="formErrors" style="color: red; margin-bottom: 1em;"></div>
       
       <div class="form-group">
-        <button type="submit" id="submitRequest" style="padding: 10px 20px; font-size: 16px;">Submit Support Request</button>
+        <button type="submit" id="submitRequest" style="padding: 10px 20px; font-size: 16px;">✉️ Submit Support Request</button>
       </div>
     </fieldset>
   </form>

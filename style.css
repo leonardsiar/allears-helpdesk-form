@@ -21,20 +21,21 @@ html {
 h1, h2, h3, legend {
   font-size: 1.25rem;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   color: var(--primary);
 }
 
 h1 {
-  font-size: 2rem;
-  margin-top: 24px;
+  font-size: 2.2rem;
+  margin-top: 32px;
   margin-bottom: 24px;
   text-align: center;
 }
 
+
 label {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text);
 }
 
@@ -51,7 +52,7 @@ body {
 }
 
 form {
-  max-width: 600px;
+  max-width: 700px;
   width: 100%;
   margin: 32px auto;
   background: #fff;
@@ -100,6 +101,7 @@ input[type="url"],
 textarea,
 select {
   font-size: 1rem;
+  font-family: inherit; 
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -146,10 +148,34 @@ input[type="submit"]:hover {
   background: var(--primary-hover);
 }
 
+button#submitRequest,
+input[type="submit"]#submitRequest {
+  width: 100%;
+  min-width: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 999px;
+  padding: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+button#submitRequest:hover,
+input[type="submit"]#submitRequest:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 4px 16px rgba(30, 64, 175, 0.15);
+}
+
 /* ====== FAQ Cards ====== */
 #relevantLinks {
   background: #EFF6FF; /* very light blue, or use var(--background) for subtle */
-  border: 1.5px solid var(--primary);
+  border: none
   border-radius: 12px;
   box-shadow: 0 1px 4px rgba(30, 64, 175, 0.06);
   padding: 0 16px 16px 16px;
@@ -248,4 +274,54 @@ input[type="checkbox"] {
     width: 100%;
     min-width: 0;
   }
+}
+
+/* ====== Link Cards ====== */
+.link-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(30, 64, 175, 0.06);
+  transition: box-shadow 0.2s, background 0.2s;
+  display: block;
+  text-decoration: none;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.link-card:hover, .link-card:focus {
+  box-shadow: 0 4px 16px rgba(30, 64, 175, 0.12);
+  background: #f3f8ff;
+  border: 1.5px solid var(--primary);
+  text-decoration: none;
+  color: var(--primary-hover);
+}
+
+/* Add this below your .link-card styles */
+.non-clickable-link-card {
+  cursor: default !important;
+  pointer-events: none;
+  color: var(--text);
+  font-weight: 400;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  transition: none;
+}
+
+.non-clickable-link-card:hover,
+.non-clickable-link-card:focus {
+  box-shadow: 0 1px 4px rgba(30, 64, 175, 0.06); /* same as normal */
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  color: var(--text);
+}
+
+/* ====== Required Field Indicator ====== */
+.required {
+  color: #DC2626; /* Tailwind's red-600, or use any red you prefer */
+  margin-left: 2px;
+  font-weight: bold;
 }
