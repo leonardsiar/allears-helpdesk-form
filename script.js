@@ -85,6 +85,13 @@ document.addEventListener("DOMContentLoaded", function () {
       fieldset2.style.display = "block"; // proceed if no FAQ
     }
 
+    const relevantGuideInput = document.getElementById("relevantGuide");
+    if (guide && (guide.url || guide.title)) {
+      relevantGuideInput.value = JSON.stringify(guide);
+    } else {
+      relevantGuideInput.value = "";
+    }
+
     evaluateStep1();
   }
 
@@ -142,11 +149,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Add hidden input for relevant guide
-  const relevantGuideInput = document.createElement("input");
-  relevantGuideInput.type = "hidden";
-  relevantGuideInput.id = "relevantGuide";
-  relevantGuideInput.name = "relevantGuide";
-  relevantGuideInput.value = "";
-  form.appendChild(relevantGuideInput);
 });
