@@ -187,16 +187,16 @@ app.post(
         <body>
           <h1>All Ears Helpdesk</h1>
           <div class="success" style="max-width:520px;margin:32px auto 24px auto;">
-            🎉 <strong>Thanks! Your request has been successfully submitted.</strong><br>
-            We’ve received your details and our team will follow up shortly.<br>
-            <span style="font-size:0.98em;">🕒 You can expect a response within 1–2 working days.</span>
+        🎉 <strong>Thanks! Your request has been successfully submitted.</strong><br>
+        We’ve received your details and our team will follow up shortly.<br>
+        <span style="font-size:0.98em;">🕒 You can expect a response within 1–2 working days.</span>
           </div>
           <div class="email-summary">
-            <h3 class="email-header">Email sent to helpdesk:</h3>
-            ${emailPreview}
+        <h3 class="email-header">Email sent to helpdesk:</h3>
+        ${emailPreview}
           </div>
-          <div class="actions" style="max-width:120px; diplay: inline-flex; margin-top: 32px; margin-bottom: 64px;">
-            <button type="button" id="submitRequest" onclick="window.location='/'">🏠 Back to Helpdesk Home</button>
+          <div class="actions" style="max-width:480px; margin: 32px auto 64px auto; text-align: center;">
+        <button type="button" id="submitRequest" onclick="window.location='/'">🏠 Back to Helpdesk Home</button>
           </div>
         </body>
         </html>
