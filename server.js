@@ -181,6 +181,7 @@ app.post(
         <head>
           <meta charset="UTF-8">
           <title>Submission Successful</title>
+          <link rel="icon" type="image/png" href="Favicon/Party popper.png">
           <link rel="stylesheet" href="style.css">
         </head>
         <body>
@@ -194,7 +195,7 @@ app.post(
             <h3 class="email-header">Email sent to helpdesk:</h3>
             ${emailPreview}
           </div>
-          <div class="actions">
+          <div class="actions" style="max-width:120px; diplay: inline-flex; margin-top: 32px; margin-bottom: 64px;">
             <button type="button" id="submitRequest" onclick="window.location='/'">🏠 Back to Helpdesk Home</button>
           </div>
         </body>
@@ -207,6 +208,7 @@ app.post(
         <html>
           <head>
             <title>Submission Error</title>
+            <link rel="icon" type="image/png" href="Favicon/warning.png">
             <style>
               body { font-family: sans-serif; text-align: center; margin-top: 5em; }
               .error { color: red; font-size: 1.5em; }
