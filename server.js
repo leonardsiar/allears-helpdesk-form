@@ -157,7 +157,7 @@ app.post(
         <p><strong>Role:</strong> ${data.userRole}</p>
         <p><strong>School:</strong> ${data.school}</p>
         <p><strong>Issue:</strong> ${data.issueType}</p>
-        <p><strong>FAQ read:</strong><a href="${guide.url}">${guide.title}</a></p>
+        <p><strong>FAQ read:</strong>${guideInfo}</p>
         <p><strong>Description:</strong><br>${data.description}</p>
         <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
       `;
