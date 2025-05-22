@@ -141,4 +141,12 @@ document.addEventListener("DOMContentLoaded", function () {
       errorDiv.textContent = "Network error. Please try again.";
     }
   });
+
+  // Add hidden input for relevant guide
+  const relevantGuideInput = document.createElement("input");
+  relevantGuideInput.type = "hidden";
+  relevantGuideInput.id = "relevantGuide";
+  relevantGuideInput.name = "relevantGuide";
+  relevantGuideInput.value = "";
+  form.appendChild(relevantGuideInput);
 });

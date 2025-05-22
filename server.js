@@ -109,6 +109,20 @@ app.post(
       const data = req.body;
       const files = req.files;
 
+      let guideInfo = "";
+      if (data.relevantGuide) {
+        try {
+          const guide = JSON.parse(data.relevantGuide);
+          if (guide.url) {
+            guideInfo = `<p><strong>Relevant Link:</strong> <a href="${guide.url}">${guide.title}</a></p>`;
+          } else if (guide.title) {
+            guideInfo = `<p><strong>Relevant Info:</strong> ${guide.title}</p>`;
+          }
+        } catch (e) {
+          // ignore if parsing fails
+        }
+      }
+
       // Prepare attachments for Resend (if needed)
       // Resend supports attachments as base64-encoded strings
       let attachments = [];
@@ -138,6 +152,7 @@ app.post(
         <p><strong>Role:</strong> ${data.userRole}</p>
         <p><strong>School:</strong> ${data.school}</p>
         <p><strong>Issue:</strong> ${data.issueType}</p>
+        ${guideInfo}
         <p><strong>Description:</strong><br>${data.description}</p>
         <p><strong>Form:</strong> ${data.formName} (<a href="${data.formURL}">${data.formURL}</a>)</p>
         <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
