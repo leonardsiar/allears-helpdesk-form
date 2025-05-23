@@ -14,7 +14,7 @@ const { NodeClam } = require('clamdjs');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
-const clam = new NodeClam().init();
+const clam = await NodeClam.create();
 
 const uploadsDir = path.join(__dirname, 'uploads');
 
