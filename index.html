@@ -96,16 +96,22 @@
         <label for="formURL">Form Link</label>
         <input type="text" id="formURL" name="formURL" placeholder="Paste the full URL of the form, if available" style="width: 90%;">
       </div>
-  
-      <div class="form-group">
-        <label for="screenshot">Upload Screenshot (JPG, PNG)</label>
-        <input type="file" id="screenshot" name="screenshot" accept="image/*" multiple aria-describedby="screenshot-desc" required>
-        <small id="screenshot-desc">Upload screenshots to help us see what you are seeing.</small>
+    </fieldset>
+
+    <fieldset id="fieldset4" style="display:none;">
+      <div class="section-header">
+        <span role="img" aria-label="Uploads"></span>
+        <legend>📸 Screenshots and Videos</legend>
       </div>
       <div class="form-group">
-        <label for="video">Upload Video (optional):</label>
-        <input type="file" id="video" name="video" accept="video/*" multiple aria-describedby="video-desc">
-        <small id="video-desc">Upload a screen recording if the issue is complex.</small>
+        <input type="checkbox" id="enableUploads" name="enableUploads">
+        <label for="enableUploads">
+          Uploading screenshots or a short screen recording can significantly help our investigation. This is optional but appreciated.
+        </label>
+      </div>
+      <div id="fileUploadContainer" style="display: none;">
+        <input type="file" id="filepond" name="file" multiple>
+        <small>Max file size: 5MB per file. Accepted file types: JPG, PNG, MP4.</small>
       </div>
     </fieldset>
 

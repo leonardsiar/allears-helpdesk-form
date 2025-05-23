@@ -377,3 +377,11 @@ input[type="checkbox"] {
   background: #d1d5db;
   color: #111827;
 }
+
+#fileUploadContainer {
+  margin-top: 16px;
+}
+
+.filepond--root {
+  margin-top: 8px;
+}

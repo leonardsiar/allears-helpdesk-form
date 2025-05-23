@@ -13,7 +13,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById('helpdeskForm');
   const formErrors = document.getElementById("formErrors");
   const clickedFAQInput = document.getElementById('clickedFAQ');
-  
+  const enableUploadsCheckbox = document.getElementById("enableUploads");
+  const fileUploadContainer = document.getElementById("fileUploadContainer");
+  const fileInput = document.getElementById("filepond");
 
    // Track FAQ link clicks with Google Analytics and sessionStorage
   if (linksList) {
@@ -241,4 +243,31 @@ document.addEventListener("DOMContentLoaded", function () {
     fillTestData();
   });
   }
+
+  // Import FilePond plugins
+  FilePond.registerPlugin(
+    FilePondPluginFileValidateType,
+    FilePondPluginFileValidateSize
+  );
+
+  // Initialize FilePond
+  const pond = FilePond.create(fileInput, {
+    allowMultiple: true,
+    maxFileSize: "5MB",
+    acceptedFileTypes: ["image/jpeg", "image/png", "video/mp4"],
+    labelIdle: 'Drag & Drop your files or <span class="filepond--label-action">Browse</span>',
+    labelFileTypeNotAllowed: "Invalid file type. Only JPG, PNG, and MP4 are allowed.",
+    labelMaxFileSizeExceeded: "File is too large. Max size is 5MB.",
+    labelMaxFileSize: "Max file size is {filesize}.",
+  });
+
+  // Toggle FilePond visibility based on checkbox
+  enableUploadsCheckbox.addEventListener("change", () => {
+    if (enableUploadsCheckbox.checked) {
+      fileUploadContainer.style.display = "block";
+    } else {
+      fileUploadContainer.style.display = "none";
+      pond.removeFiles(); // Clear files if the checkbox is unchecked
+    }
+  });
 });

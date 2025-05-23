@@ -7,9 +7,14 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 const { Resend } = require('resend');
 const fs = require('fs');
+const FileType = require('file-type');
+const sanitizeFilename = require('sanitize-filename');
+const { NodeClam } = require('clamdjs');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
+const clam = new NodeClam().init();
 
 const uploadsDir = path.join(__dirname, 'uploads');
 
@@ -50,22 +55,43 @@ if (!fs.existsSync(uploadsDir)) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+  filename: (req, file, cb) => {
+    const sanitizedFilename = sanitizeFilename(file.originalname);
+    const filePath = `${Date.now()}-${sanitizedFilename}`;
+    cb(null, filePath);
+
+    // Set file permissions to read/write only for the owner (600)
+    fs.chmod(path.join('uploads', filePath), 0o600, (err) => {
+      if (err) console.error(`Error setting file permissions for ${filePath}:`, err);
+    });
+  },
 });
+
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max per file
-  fileFilter: (req, file, cb) => {
-    if (
-      (file.fieldname === 'screenshot' && !file.mimetype.startsWith('image/')) ||
-      (file.fieldname === 'video' && !file.mimetype.startsWith('video/'))
-    ) {
-      return cb(new Error('Invalid file type!'));
-    }
-    cb(null, true);
-  }
-});
+  fileFilter: async (req, file, cb) => {
+    const allowedImageTypes = ['image/jpeg', 'image/png'];
+    const allowedVideoTypes = ['video/mp4'];
 
+    try {
+      // Validate file content
+      const fileBuffer = file.buffer || fs.readFileSync(file.path);
+      const fileType = await FileType.fromBuffer(fileBuffer);
+
+      if (
+        (file.fieldname === 'screenshot' && !allowedImageTypes.includes(fileType?.mime)) ||
+        (file.fieldname === 'video' && !allowedVideoTypes.includes(fileType?.mime))
+      ) {
+        return cb(new Error('Invalid file type!'));
+      }
+
+      cb(null, true);
+    } catch (err) {
+      cb(err);
+    }
+  },
+});
 
 // Rate limiter
 const limiter = rateLimit({
@@ -132,26 +158,20 @@ app.post(
       // Prepare attachments for Resend (if needed)
       // Resend supports attachments as base64-encoded strings
       let attachments = [];
-      if (files.screenshot) {
-        for (const file of files.screenshot) {
-          attachments.push({
-            filename: file.originalname,
-            content: require('fs').readFileSync(file.path).toString('base64'),
-            type: file.mimetype,
-            disposition: 'attachment'
-          });
+      const fileTypes = ['screenshot', 'video'];
+      fileTypes.forEach((type) => {
+        if (files[type]) {
+          for (const file of files[type]) {
+            const content = await fs.promises.readFile(file.path, 'base64');
+            attachments.push({
+              filename: file.originalname,
+              content,
+              type: file.mimetype,
+              disposition: 'attachment'
+            });
+          }
         }
-      }
-      if (files.video) {
-        for (const file of files.video) {
-          attachments.push({
-            filename: file.originalname,
-            content: require('fs').readFileSync(file.path).toString('base64'),
-            type: file.mimetype,
-            disposition: 'attachment'
-          });
-        }
-      }
+      });
 
       const htmlBody = `
         <h3>New Helpdesk Ticket</h3>
@@ -220,6 +240,18 @@ app.post(
           </body>
         </html>
       `);
+    } finally {
+      // Clean up uploaded files after processing the request
+      const fileTypes = ['screenshot', 'video'];
+      fileTypes.forEach((type) => {
+        if (files[type]) {
+          for (const file of files[type]) {
+            fs.unlink(file.path, (err) => {
+              if (err) console.error(`Error deleting file ${file.path}:`, err);
+            });
+          }
+        }
+      });
     }
   }
 );
