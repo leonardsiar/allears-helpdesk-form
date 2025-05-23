@@ -138,12 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fieldset2.style.display = canShow ? "block" : "none";
   }
 
-  // Show fieldset 3 when a screenshot is uploaded
-  //const screenshotInput = document.getElementById("screenshot");
-  //screenshotInput.addEventListener("change", () => {
-   // fieldset3.style.display = screenshotInput.files.length > 0 ? "block" : "none";
-  //});
-  // Show fieldset 3 when description is filled
+  // Show/hide fieldset3 based on description input
   description.addEventListener("input", () => {
     fieldset3.style.display = description.value.trim() !== "" ? "block" : "none";
   });

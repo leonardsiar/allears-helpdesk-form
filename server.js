@@ -7,11 +7,12 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 const { Resend } = require('resend');
 const fs = require('fs');
-
+const errors = validationResult(req);
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
 const clickedFAQ = data.clickedFAQ === "yes" ? "Yes" : "No";
+const uploadsDir = path.join(__dirname, 'uploads');
 
 app.set('trust proxy', 1);
 
@@ -35,7 +36,6 @@ app.get('/success', (req, res) => {
 });
 
 // Configure multer for file uploads
-const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
 }
@@ -86,30 +86,11 @@ app.post(
     body('school').optional({ checkFalsy: true }).trim().escape(),
   ],
   async (req, res) => {
-    const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // Return HTML error page
-      const errorList = errors.array().map(err => `<li>${err.msg} (${err.param})</li>`).join('');
-      return res.status(400).send(`
-        <html>
-          <head>
-            <title>Invalid Input</title>
-            <style>
-              body { font-family: sans-serif; text-align: center; margin-top: 5em; }
-              .error { color: red; font-size: 1.2em; }
-              ul { display: inline-block; text-align: left; }
-            </style>
-          </head>
-          <body>
-            <div class="error">
-              ⚠️ Invalid input. Please check your entries and try again.
-              <ul>${errorList}</ul>
-            </div>
-            <a href="/">Back to Helpdesk Form</a>
-          </body>
-        </html>
-      `);
+      // Return errors as JSON
+      return res.status(400).json({ errors: errors.array() });
     }
+      
 
     try {
       const data = req.body;
@@ -125,7 +106,7 @@ app.post(
             guideInfo = `<p><strong>Relevant Info:</strong> ${guide.title}</p>`;
           }
         } catch (e) {
-          // ignore if parsing fails
+          console.error("Failed to parse relevantGuide:", e); // Log the error for debugging
         }
       }
 
@@ -163,9 +144,6 @@ app.post(
         <p><strong>Description:</strong><br>${data.description}</p>
         <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
       `;
-      console.log("=== EMAIL PREVIEW ===");
-      console.log(htmlBody);
-      console.log("=====================");
 
       await resend.emails.send({
         from: process.env.EMAIL_FROM, // e.g. "AllEars Helpdesk <support@yourdomain.com>"
