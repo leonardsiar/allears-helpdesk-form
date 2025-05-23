@@ -7,7 +7,6 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 const { Resend } = require('resend');
 const fs = require('fs');
-const errors = validationResult(req);
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -86,6 +85,7 @@ app.post(
     body('school').optional({ checkFalsy: true }).trim().escape(),
   ],
   async (req, res) => {
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       // Return errors as JSON
       return res.status(400).json({ errors: errors.array() });
