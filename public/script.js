@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById('helpdeskForm');
   const formErrors = document.getElementById("formErrors");
   const clickedFAQInput = document.getElementById('clickedFAQ');
-  const guide = guidanceMatrix[role]?.[issue];
+  
 
    // Track FAQ link clicks with Google Analytics and sessionStorage
   if (linksList) {
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-   
+    const guide = guidanceMatrix[role]?.[issue];
     if (guide) {
       let html = "";
       if (guide.url) {
