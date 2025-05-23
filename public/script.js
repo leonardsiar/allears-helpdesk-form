@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // If the response is not OK, handle errors
         const data = await response.json();
         if (data.errors) {
-          const errorList = data.errors.map(err => `<li>${err.msg} (${err.param})</li>`).join('');
+          const errorList = data.errors.map(err => `<li>${err.msg}</li>`).join('');
           formErrors.innerHTML = `<ul>${errorList}</ul>`;
           formErrors.style.display = "block";
         }
