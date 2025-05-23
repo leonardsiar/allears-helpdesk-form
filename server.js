@@ -1,24 +1,25 @@
-const express = require('express');
-const multer = require('multer');
-const cors = require('cors');
-const path = require('path');
-const { body, validationResult } = require('express-validator');
-const rateLimit = require('express-rate-limit');
-const dotenv = require('dotenv');
-const Resend = require('resend');
-const fs = require('fs');
-const { fileTypeFromBuffer } = require('file-type');
-const sanitizeFilename = require('sanitize-filename');
-const clamd = require('clamdjs');
-const { NodeClam } = clamd;
+import express from 'express';
+import multer from 'multer';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { body, validationResult } from 'express-validator';
+import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
+import { Resend } from 'resend';
+import fs from 'fs';
+import { fileTypeFromBuffer } from 'file-type';
+import sanitizeFilename from 'sanitize-filename';
+import clamd from 'clamdjs';
+
+// Initialize ClamAV scanner
+const scanner = clamd.createScanner('127.0.0.1', 3310);
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
-const clam = await NodeClam.create();
-const scanner = clamd.createScanner('127.0.0.1', 3310);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,26 +34,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-// test /submit page HTML
 app.get('/success', (req, res) => {
-  res.sendFile(path.join(__dirname, 'testsuccess.html'));
+  res.sendFile(path.join(__dirname, 'success.html'));
 });
 
 // Enable CORS for local frontend
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Serve the index.html file at the root URL
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/success', (req, res) => {
-  res.sendFile(path.join(__dirname, 'success.html'));
-});
 
 // Configure multer for file uploads
 if (!fs.existsSync(uploadsDir)) {
@@ -103,7 +92,7 @@ const upload = multer({
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // limit each IP to 10 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  message: 'Too many requests from this IP, please try again later.',
 });
 app.use('/submit', limiter);
 
@@ -155,15 +144,14 @@ app.post(
       console.log(errors.array()); // Debug the errors
       return res.status(400).json({ errors: errors.array() });
     }
-      
 
     try {
       const data = req.body;
-      const clickedFAQ = data.clickedFAQ === "yes" ? "Yes" : "No";
-      const relevantGuide = data.relevantGuide || "{}"; // Default to an empty JSON string
-      
+      const clickedFAQ = data.clickedFAQ === 'yes' ? 'Yes' : 'No';
+      const relevantGuide = data.relevantGuide || '{}'; // Default to an empty JSON string
+
       const files = req.files || {};
-      let guideInfo = "";
+      let guideInfo = '';
       if (data.relevantGuide) {
         try {
           const guide = JSON.parse(data.relevantGuide);
@@ -173,18 +161,17 @@ app.post(
             guideInfo = `<p><strong>Relevant Info:</strong> ${guide.title}</p>`;
           }
         } catch (e) {
-          console.error("Failed to parse relevantGuide:", e); // Log the error for debugging
+          console.error('Failed to parse relevantGuide:', e); // Log the error for debugging
         }
       }
 
       // Prepare attachments for Resend (if needed)
-      // Resend supports attachments as base64-encoded strings
       let attachments = [];
       const fileTypes = ['screenshot', 'video'];
       for (const type of fileTypes) {
         if (files[type]) {
           for (const file of files[type]) {
-            const content = await fs.promises.readFile(file.path, 'base64'); // Now this works
+            const content = await fs.promises.readFile(file.path, 'base64');
             attachments.push({
               filename: file.originalname,
               content,
@@ -207,15 +194,13 @@ app.post(
       `;
 
       await resend.emails.send({
-        from: process.env.EMAIL_FROM, // e.g. "AllEars Helpdesk <support@yourdomain.com>"
+        from: process.env.EMAIL_FROM,
         to: process.env.EMAIL_TO,
         subject: `Helpdesk Ticket: ${data.fullName} | ${data.userRole} | ${data.issueType}`,
         html: htmlBody,
-        attachments
+        attachments,
       });
 
-      // After sending the email, render the success page with the email preview
-      const emailPreview = htmlBody; // This is your email HTML content
       res.send(`
         <!DOCTYPE html>
         <html lang="en">
@@ -234,7 +219,7 @@ app.post(
           </div>
           <div class="email-summary">
         <h3 class="email-header">Email sent to helpdesk:</h3>
-        ${emailPreview}
+        ${htmlBody}
           </div>
           <div class="actions" style="max-width:480px; margin: 32px auto 64px auto; text-align: center;">
         <button type="button" id="submitRequest" onclick="window.location='/'">🏠 Back to Helpdesk Home</button>
@@ -243,7 +228,7 @@ app.post(
         </html>
       `);
     } catch (error) {
-      console.error("Error processing request:", error);
+      console.error('Error processing request:', error);
       res.status(500).send(`
         <html>
           <head>
@@ -280,7 +265,7 @@ app.post(
 
 // Check for required environment variables
 if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM || !process.env.EMAIL_TO) {
-  console.error("Missing required environment variables.");
+  console.error('Missing required environment variables.');
   process.exit(1); // Exit the application
 }
 
