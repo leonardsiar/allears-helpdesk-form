@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const fieldset2 = document.getElementById("fieldset2");
   const fieldset3 = document.getElementById("fieldset3");
   const form = document.getElementById('helpdeskForm');
-  const errorDiv = document.getElementById('formErrors');
+  const formErrors = document.getElementById("formErrors");
   const clickedFAQInput = document.getElementById('clickedFAQ');
   const guide = guidanceMatrix[role]?.[issue];
 
@@ -152,9 +152,43 @@ document.addEventListener("DOMContentLoaded", function () {
       if (clickedFAQInput) clickedFAQInput.value = "yes";
     }
   });
-}
-  // --- TESTING: Auto-fill form with random/sample data ---
-  function randomFrom(arr) {
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Clear previous errors
+    formErrors.style.display = "none";
+    formErrors.innerHTML = "";
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(form.action, {
+        method: form.method,
+        body: formData,
+      });
+
+      if (!response.ok) {
+        // If the response is not OK, handle errors
+        const data = await response.json();
+        if (data.errors) {
+          const errorList = data.errors.map(err => `<li>${err.msg} (${err.param})</li>`).join('');
+          formErrors.innerHTML = `<ul>${errorList}</ul>`;
+          formErrors.style.display = "block";
+        }
+        return; // Stop further execution
+      }
+
+      // If successful, redirect to the success page
+      window.location.href = "/success";
+    } catch (error) {
+      console.error("Error submitting the form:", error);
+      alert("An unexpected error occurred. Please try again later.");
+    }
+  });
+  
+   // --- TESTING: Auto-fill form with random/sample data ---
+   function randomFrom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
@@ -206,4 +240,5 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
     fillTestData();
   });
+  }
 });
