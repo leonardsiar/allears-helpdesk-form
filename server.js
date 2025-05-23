@@ -15,6 +15,15 @@ const uploadsDir = path.join(__dirname, 'uploads');
 
 app.set('trust proxy', 1);
 
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 // test /submit page HTML
 app.get('/success', (req, res) => {
   res.sendFile(path.join(__dirname, 'testsuccess.html'));
@@ -23,6 +32,7 @@ app.get('/success', (req, res) => {
 // Enable CORS for local frontend
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve the index.html file at the root URL
 app.get('/', (req, res) => {
