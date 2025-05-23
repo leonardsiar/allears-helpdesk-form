@@ -10,7 +10,8 @@ import { Resend } from 'resend';
 import fs from 'fs';
 import { fileTypeFromBuffer } from 'file-type';
 import sanitizeFilename from 'sanitize-filename';
-import { NodeClam } from 'clamdjs';
+import clamdjs from 'clamdjs';
+const { NodeClam } = clamdjs;
 
 dotenv.config();
 
