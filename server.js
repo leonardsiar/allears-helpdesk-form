@@ -1,21 +1,26 @@
-const express = require('express');
-const multer = require('multer');
-const cors = require('cors');
-const path = require('path');
-const { body, validationResult } = require('express-validator');
-const rateLimit = require('express-rate-limit');
-require('dotenv').config();
-const { Resend } = require('resend');
-const fs = require('fs');
-const FileType = require('file-type');
-const sanitizeFilename = require('sanitize-filename');
-const { NodeClam } = require('clamdjs');
+import express from 'express';
+import multer from 'multer';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { body, validationResult } from 'express-validator';
+import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
+import { Resend } from 'resend';
+import fs from 'fs';
+import { fileTypeFromBuffer } from 'file-type';
+import sanitizeFilename from 'sanitize-filename';
+import { NodeClam } from 'clamdjs';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
 const clam = await NodeClam.create();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, 'uploads');
 
 app.set('trust proxy', 1);
@@ -77,7 +82,7 @@ const upload = multer({
     try {
       // Validate file content
       const fileBuffer = file.buffer || fs.readFileSync(file.path);
-      const fileType = await FileType.fromBuffer(fileBuffer);
+      const fileType = await fileTypeFromBuffer(fileBuffer);
 
       if (
         (file.fieldname === 'screenshot' && !allowedImageTypes.includes(fileType?.mime)) ||
