@@ -23,7 +23,6 @@ app.get('/success', (req, res) => {
 // Enable CORS for local frontend
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve the index.html file at the root URL
 app.get('/', (req, res) => {
