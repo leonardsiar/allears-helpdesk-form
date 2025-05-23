@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const relevantLinksDiv = document.getElementById("relevantLinks");
   const linksList = document.getElementById("linksList");
   const description = document.getElementById("description");
+  const descriptionCharCount = document.getElementById("descriptionCharCount");
   const fieldset2 = document.getElementById("fieldset2");
   const fieldset3 = document.getElementById("fieldset3");
   const form = document.getElementById('helpdeskForm');
@@ -16,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const enableUploadsCheckbox = document.getElementById("enableUploads");
   const fileUploadContainer = document.getElementById("fileUploadContainer");
   const fileInput = document.getElementById("filepond");
+  const minChars = 50; // Minimum required characters
 
    // Track FAQ link clicks with Google Analytics and sessionStorage
   if (linksList) {
@@ -145,6 +147,18 @@ document.addEventListener("DOMContentLoaded", function () {
     fieldset3.style.display = description.value.trim() !== "" ? "block" : "none";
   });
 
+  // Update character count on input
+  description.addEventListener("input", () => {
+    const currentLength = description.value.length;
+    descriptionCharCount.textContent = `${currentLength}/${minChars} characters`;
+
+    // Change color if minimum characters are met
+    if (currentLength >= minChars) {
+      descriptionCharCount.style.color = "green";
+    } else {
+      descriptionCharCount.style.color = "gray";
+    }
+  });
 
   // hidden input to track clicked FAQ link
   if (linksList) {

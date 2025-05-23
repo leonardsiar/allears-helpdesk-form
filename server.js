@@ -1,17 +1,16 @@
-import express from 'express';
-import multer from 'multer';
-import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { body, validationResult } from 'express-validator';
-import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
-import { Resend } from 'resend';
-import fs from 'fs';
-import { fileTypeFromBuffer } from 'file-type';
-import sanitizeFilename from 'sanitize-filename';
-import clamdjs from 'clamdjs';
-const { NodeClam } = clamdjs;
+const express = require('express');
+const multer = require('multer');
+const cors = require('cors');
+const path = require('path');
+const { body, validationResult } = require('express-validator');
+const rateLimit = require('express-rate-limit');
+const dotenv = require('dotenv');
+const Resend = require('resend');
+const fs = require('fs');
+const { fileTypeFromBuffer } = require('file-type');
+const sanitizeFilename = require('sanitize-filename');
+const clamd = require('clamdjs');
+const { NodeClam } = clamd;
 
 dotenv.config();
 
@@ -19,6 +18,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
 const clam = await NodeClam.create();
+const scanner = clamd.createScanner('127.0.0.1', 3310);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -111,11 +111,27 @@ app.use('/submit', limiter);
 app.post(
   '/submit',
   (req, res, next) => {
-    upload.fields([{ name: 'screenshot' }, { name: 'video' }])(req, res, (err) => {
+    upload.fields([{ name: 'screenshot' }, { name: 'video' }])(req, res, async (err) => {
       if (err instanceof multer.MulterError || err) {
         return res.status(400).json({ errors: [{ msg: err.message }] });
       }
-      next();
+
+      const files = req.files || {};
+      const fileTypes = ['screenshot', 'video'];
+
+      try {
+        // Scan each uploaded file for viruses
+        for (const type of fileTypes) {
+          if (files[type]) {
+            for (const file of files[type]) {
+              await scanFileForViruses(file.path); // Scan the file
+            }
+          }
+        }
+        next(); // Proceed to the next middleware if all files are clean
+      } catch (error) {
+        return res.status(400).json({ errors: [{ msg: error.message }] });
+      }
     });
   },
   [
@@ -269,3 +285,17 @@ if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM || !process.env.EMAIL
 }
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+async function scanFileForViruses(filePath) {
+  try {
+    const result = await scanner.scanFile(filePath, 3000, 1024 * 1024); // Timeout: 3000ms, Max size: 1MB
+    if (result.includes('FOUND')) {
+      const virus = result.split('FOUND')[0].trim();
+      throw new Error(`File is infected with ${virus}`);
+    }
+    console.log('File is clean:', result);
+  } catch (error) {
+    console.error('Error scanning file:', error.message);
+    throw error;
+  }
+}
