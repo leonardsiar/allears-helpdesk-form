@@ -159,19 +159,19 @@ app.post(
       // Resend supports attachments as base64-encoded strings
       let attachments = [];
       const fileTypes = ['screenshot', 'video'];
-      fileTypes.forEach((type) => {
+      for (const type of fileTypes) {
         if (files[type]) {
           for (const file of files[type]) {
-            const content = await fs.promises.readFile(file.path, 'base64');
+            const content = await fs.promises.readFile(file.path, 'base64'); // Now this works
             attachments.push({
               filename: file.originalname,
               content,
               type: file.mimetype,
-              disposition: 'attachment'
+              disposition: 'attachment',
             });
           }
         }
-      });
+      }
 
       const htmlBody = `
         <h3>New Helpdesk Ticket</h3>
