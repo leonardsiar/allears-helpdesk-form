@@ -10,7 +10,7 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
-const clickedFAQ = data.clickedFAQ === "yes" ? "Yes" : "No";
+
 const uploadsDir = path.join(__dirname, 'uploads');
 
 app.set('trust proxy', 1);
@@ -23,7 +23,7 @@ app.get('/success', (req, res) => {
 // Enable CORS for local frontend
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve the index.html file at the root URL
 app.get('/', (req, res) => {
@@ -69,7 +69,14 @@ app.use('/submit', limiter);
 // POST endpoint to handle form submission
 app.post(
   '/submit',
-  upload.fields([{ name: 'screenshot' }, { name: 'video' }]),
+  (req, res, next) => {
+    upload.fields([{ name: 'screenshot' }, { name: 'video' }])(req, res, (err) => {
+      if (err instanceof multer.MulterError || err) {
+        return res.status(400).json({ errors: [{ msg: err.message }] });
+      }
+      next();
+    });
+  },
   [
     body('userRole').trim().notEmpty(),
     body('issueType').trim().notEmpty(),
@@ -94,8 +101,10 @@ app.post(
 
     try {
       const data = req.body;
-      const files = req.files;
-
+      const clickedFAQ = data.clickedFAQ === "yes" ? "Yes" : "No";
+      const relevantGuide = data.relevantGuide || "{}"; // Default to an empty JSON string
+      
+      const files = req.files || {};
       let guideInfo = "";
       if (data.relevantGuide) {
         try {
@@ -182,8 +191,7 @@ app.post(
         </html>
       `);
     } catch (error) {
-      console.error(error);
-      // Respond with an error HTML page
+      console.error("Error processing request:", error);
       res.status(500).send(`
         <html>
           <head>
@@ -205,5 +213,11 @@ app.post(
     }
   }
 );
+
+// Check for required environment variables
+if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM || !process.env.EMAIL_TO) {
+  console.error("Missing required environment variables.");
+  process.exit(1); // Exit the application
+}
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
