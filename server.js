@@ -333,7 +333,7 @@ const newId = result.rows[0].id;
               <head>
                 <meta charset="UTF-8">
                 <title>Submission Successful</title>
-                <link rel="icon" type="image/png" href="/Favicon/Party%20popper.png">
+                <link rel="icon" type="image/png" href="/Favicon/Party-popper.png">
                 <link rel="stylesheet" href="/style.css">
               </head>
               <body>
