@@ -53,7 +53,9 @@ if (!fs.existsSync(uploadsDir)) {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => {
-    const sanitizedFilename = sanitizeFilename(file.originalname);
+    // Normalize Unicode and remove non-ASCII characters
+    const normalized = file.originalname.normalize('NFKD').replace(/[^\x00-\x7F]/g, '');
+    const sanitizedFilename = sanitizeFilename(normalized);
     const filePath = `${Date.now()}-${sanitizedFilename}`;
     cb(null, filePath);
 
