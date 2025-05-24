@@ -399,3 +399,25 @@ input[type="checkbox"] {
 .filepond--root {
   margin-top: 8px;
 }
+
+#loadingIndicator {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background: #EFF6FF;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 20px;
+  margin-top: 1em;
+  font-size: 1.08rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+#loadingIndicator img {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  display: inline-block;
+  vertical-align: middle;
+}

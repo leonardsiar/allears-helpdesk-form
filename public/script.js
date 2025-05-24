@@ -191,23 +191,26 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   form.addEventListener("submit", async function (event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    // Clear previous errors
-    formErrors.style.display = "none";
-    formErrors.innerHTML = "";
-
-    const formData = new FormData(form);
-
-    // Add FilePond files to FormData
-    if (window.FilePond && pond && pond.getFiles) {
-      pond.getFiles().forEach(fileItem => {
-        // 'file' is the field name your backend expects
-        formData.append('file', fileItem.file, fileItem.file.name);
-      });
-    }
+    // Show spinner
+    document.getElementById("loadingIndicator").style.display = "block";
 
     try {
+      // Clear previous errors
+      formErrors.style.display = "none";
+      formErrors.innerHTML = "";
+
+      const formData = new FormData(form);
+
+      // Add FilePond files to FormData
+      if (window.FilePond && pond && pond.getFiles) {
+        pond.getFiles().forEach(fileItem => {
+          // 'file' is the field name your backend expects
+          formData.append('file', fileItem.file, fileItem.file.name);
+        });
+      }
+
       const response = await fetch(form.action, {
         method: form.method,
         body: formData,
@@ -236,6 +239,9 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error submitting the form:", error);
           alert("An unexpected error occurred. Please try again later.");
       
+    } finally {
+      // Hide spinner (if not redirecting)
+      document.getElementById("loadingIndicator").style.display = "none";
     }
   });
   
