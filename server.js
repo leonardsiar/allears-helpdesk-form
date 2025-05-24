@@ -25,6 +25,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, 'uploads');
 
+const fileTypes = ['screenshot', 'video'];
+
 app.set('trust proxy', 1);
 
 // Serve static files from the "public" directory
@@ -32,10 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/success', (req, res) => {
-  res.sendFile(path.join(__dirname, 'success.html'));
 });
 
 // Enable CORS for local frontend
@@ -105,10 +103,10 @@ app.post(
         return res.status(400).json({ errors: [{ msg: err.message }] });
       }
 
-      const files = req.files || {};
-      const fileTypes = ['screenshot', 'video'];
+      let files = {};
 
       try {
+        files = req.files || {}; // Assign files here
         // Scan each uploaded file for viruses
         for (const type of fileTypes) {
           if (files[type]) {
@@ -120,7 +118,7 @@ app.post(
         next(); // Proceed to the next middleware if all files are clean
       } catch (error) {
         return res.status(400).json({ errors: [{ msg: error.message }] });
-      }
+      } 
     });
   },
   [
@@ -167,7 +165,6 @@ app.post(
 
       // Prepare attachments for Resend (if needed)
       let attachments = [];
-      const fileTypes = ['screenshot', 'video'];
       for (const type of fileTypes) {
         if (files[type]) {
           for (const file of files[type]) {
@@ -201,6 +198,7 @@ app.post(
         attachments,
       });
 
+      console.log("Success page requested")
       res.send(`
         <!DOCTYPE html>
         <html lang="en">
@@ -249,7 +247,6 @@ app.post(
       `);
     } finally {
       // Clean up uploaded files after processing the request
-      const fileTypes = ['screenshot', 'video'];
       fileTypes.forEach((type) => {
         if (files[type]) {
           for (const file of files[type]) {
