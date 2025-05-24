@@ -267,7 +267,7 @@ const newId = result.rows[0].id;
         <html>
           <head>
             <title>Submission Error</title>
-            <link rel="icon" type="image/png" href="Favicon/warning.png">
+            <link rel="icon" type="image/png" href="/Favicon/warning.png">
             <style>
               body { font-family: sans-serif; text-align: center; margin-top: 5em; }
               .error { color: red; font-size: 1.5em; }
