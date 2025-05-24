@@ -178,6 +178,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const formData = new FormData(form);
 
+    // Add FilePond files to FormData
+    if (window.FilePond && pond && pond.getFiles) {
+      pond.getFiles().forEach(fileItem => {
+        // 'file' is the field name your backend expects
+        formData.append('file', fileItem.file, fileItem.file.name);
+      });
+    }
+
     try {
       const response = await fetch(form.action, {
         method: form.method,
@@ -263,9 +271,9 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
     fillTestData();
   });
-  }
+}
 
-  // Import FilePond plugins
+// Import FilePond plugins
   FilePond.registerPlugin(
     FilePondPluginFileValidateType,
     FilePondPluginFileValidateSize,
@@ -281,6 +289,7 @@ document.addEventListener("DOMContentLoaded", function () {
     labelFileTypeNotAllowed: "Invalid file type. Only JPG, PNG, MP4 and MOV are allowed.",
     labelMaxFileSizeExceeded: "File is too large. Max size is 5MB.",
     labelMaxFileSize: "Max file size is {filesize}.",
+    server: null
   });
 
   // Toggle FilePond visibility based on checkbox

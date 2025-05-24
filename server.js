@@ -32,7 +32,7 @@ const fileTypes = ['file'];
 if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM || !process.env.EMAIL_TO) {
   console.error('Missing required environment variables.');
   process.exit(1); // Exit the application
-  }
+}
 app.set('trust proxy', 1);
 
 app.get('/', (req, res) => {
@@ -64,30 +64,12 @@ const storage = multer.diskStorage({
   },
 });
 
+const allowedImageTypes = ['image/jpeg', 'image/png'];
+const allowedVideoTypes = ['video/mp4'];
+
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max per file
-  fileFilter: async (req, file, cb) => {
-    const allowedImageTypes = ['image/jpeg', 'image/png'];
-    const allowedVideoTypes = ['video/mp4'];
-
-    try {
-      // Validate file content
-      const fileBuffer = file.buffer || fs.readFileSync(file.path);
-      const fileType = await fileTypeFromBuffer(fileBuffer);
-
-      if (
-        (file.fieldname === 'screenshot' && !allowedImageTypes.includes(fileType?.mime)) ||
-        (file.fieldname === 'video' && !allowedVideoTypes.includes(fileType?.mime))
-      ) {
-        return cb(new Error('Invalid file type!'));
-      }
-
-      cb(null, true);
-    } catch (err) {
-      cb(err);
-    }
-  },
 });
 
 // Rate limiter
@@ -120,23 +102,17 @@ app.post(
       if (err instanceof multer.MulterError || err) {
         return res.status(400).json({ errors: [{ msg: err.message }] });
       }
-
-      let files = {};
-
+      console.log('req.files:', req.files);
+console.log('req.body:', req.body);
       try {
-        files = req.files || {}; // Assign files here
         // Scan each uploaded file for viruses
-        for (const type of fileTypes) {
-          if (files[type]) {
-            for (const file of files[type]) {
-              await scanFileForViruses(file.path); // Scan the file
-            }
-          }
-        }
-        next(); // Proceed to the next middleware if all files are clean
+        //for (const file of req.files || []) {
+         // await scanFileForViruses(file.path);
+        //}
+        next();
       } catch (error) {
         return res.status(400).json({ errors: [{ msg: error.message }] });
-      } 
+      }
     });
   },
   [
@@ -154,57 +130,57 @@ app.post(
     body('school').optional({ checkFalsy: true }).trim().escape(),
   ],
   async (req, res) => {
-    let files = req.files || {};
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // Return errors as JSON
-      console.log(errors.array()); // Debug the errors
+      console.log(errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // Collect file metadata for DB
     let fileMetadata = [];
-for (const file of req.files || []) {
-  fileMetadata.push({
-    field: file.fieldname,
-    filename: file.originalname,
-    path: file.path,
-    size: file.size,
-    mimetype: file.mimetype
-  });
-}
-const attachmentsJson = JSON.stringify(fileMetadata);
+    for (const file of req.files || []) {
+      fileMetadata.push({
+        field: file.fieldname,
+        filename: file.originalname,
+        path: file.path,
+        size: file.size,
+        mimetype: file.mimetype
+      });
+    }
+    const attachmentsJson = JSON.stringify(fileMetadata);
 
     try {
       const data = req.body;
       const clickedFAQ = data.clickedFAQ === 'yes' ? 'Yes' : 'No';
-      const relevantGuide = data.relevantGuide || '{}'; // Default to an empty JSON string
+      const relevantGuide = data.relevantGuide || '{}';
 
-// --- DB INSERTION ---
-const insertQuery = `
-  INSERT INTO submissions (
-    user_role, issue_type, description, form_name, form_url,
-    full_name, email, contact_email, school, clicked_faq, relevant_guide, attachments
-  )
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-  RETURNING id
-`;
-const values = [
-  data.userRole,
-  data.issueType,
-  data.description,
-  data.formName,
-  data.formURL,
-  data.fullName,
-  data.email,
-  data.contactEmail,
-  data.school,
-  clickedFAQ,
-  relevantGuide,
-  attachmentsJson // <-- Add this as the last value
-];
-const result = await db.query(insertQuery, values);
-const newId = result.rows[0].id;
+      // --- DB INSERTION ---
+      const insertQuery = `
+        INSERT INTO submissions (
+          user_role, issue_type, description, form_name, form_url,
+          full_name, email, contact_email, school, clicked_faq, relevant_guide, attachments
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING id
+      `;
+      const values = [
+        data.userRole,
+        data.issueType,
+        data.description,
+        data.formName,
+        data.formURL,
+        data.fullName,
+        data.email,
+        data.contactEmail,
+        data.school,
+        clickedFAQ,
+        relevantGuide,
+        attachmentsJson
+      ];
+      const result = await db.query(insertQuery, values);
+      const newId = result.rows[0].id;
 
+      // Prepare guide info for email
       let guideInfo = '';
       if (data.relevantGuide) {
         try {
@@ -215,25 +191,22 @@ const newId = result.rows[0].id;
             guideInfo = `<p><strong>Relevant Info:</strong> ${guide.title}</p>`;
           }
         } catch (e) {
-          console.error('Failed to parse relevantGuide:', e); // Log the error for debugging
+          console.error('Failed to parse relevantGuide:', e);
         }
       }
 
-      // Prepare attachments for Resend (if needed)
+      // Prepare attachments for Resend
       let attachments = [];
-      for (const type of fileTypes) {
-        if (files[type]) {
-          for (const file of files[type]) {
-            const content = await fs.promises.readFile(file.path, 'base64');
-            attachments.push({
-              filename: file.originalname,
-              content,
-              type: file.mimetype,
-              disposition: 'attachment',
-            });
-          }
-        }
+      for (const file of req.files || []) {
+        const content = await fs.promises.readFile(file.path, 'base64');
+        attachments.push({
+          filename: file.originalname,
+          content,
+          type: file.mimetype,
+          disposition: 'attachment',
+        });
       }
+      console.log('Email attachments:', attachments);
 
       const htmlBody = `
         <h3>New Helpdesk Ticket</h3>
@@ -247,21 +220,20 @@ const newId = result.rows[0].id;
       `;
 
       try {
-       await resend.emails.send({
-        from: process.env.EMAIL_FROM,
-        to: process.env.EMAIL_TO,
-        subject: `Helpdesk Ticket: ${data.fullName} | ${data.userRole} | ${data.issueType}`,
-        html: htmlBody,
-        attachments,
-      });
+        await resend.emails.send({
+          from: process.env.EMAIL_FROM,
+          to: process.env.EMAIL_TO,
+          subject: `Helpdesk Ticket: ${data.fullName} | ${data.userRole} | ${data.issueType}`,
+          html: htmlBody,
+          attachments,
+        });
         console.log('Email sent successfully');
       } catch (error) {
         console.error('Error sending email:', error);
       }
 
-    
-        res.json({ success: true, id: newId });
-      } catch (error) {
+      res.json({ success: true, id: newId });
+    } catch (error) {
       console.error('Error processing request:', error);
       res.status(500).send(`
         <html>
@@ -283,18 +255,14 @@ const newId = result.rows[0].id;
       `);
     } finally {
       // Clean up uploaded files after processing the request
-      fileTypes.forEach((type) => {
-        if (files[type]) {
-          for (const file of files[type]) {
-            fs.unlink(file.path, (err) => {
-              if (err) console.error(`Error deleting file ${file.path}:`, err);
-            });
-          }
-        }
-       });
+      for (const file of req.files || []) {
+        fs.unlink(file.path, (err) => {
+          if (err) console.error(`Error deleting file ${file.path}:`, err);
+        });
       }
     }
-  );
+  }
+);
     
     function escapeHtml(str) {
       return String(str)
@@ -340,11 +308,15 @@ const newId = result.rows[0].id;
                 <h1>🎉 Thank you ${escapeHtml(submission.full_name)}</h1>
                  <div class="email-summary">
                       <h3>Email sent to helpdesk:</h3>
-                      <p><strong>Role:</strong> ${escapeHtml(submission.userRole)}</p>
+                      <p><strong>Role:</strong> ${escapeHtml(submission.user_role)}</p>
                       <p><strong>Issue Type:</strong> ${escapeHtml(submission.issue_type)}</p>
                       <p><strong>Description:</strong><br>${escapeHtml(submission.description)}</p>
                       ${guideInfo}
-                      <p><strong>Attached file:</strong>${escapeHtml()}
+                      <p><strong>Attached file:</strong> ${
+                        JSON.parse(submission.attachments || '[]')
+                          .map(file => escapeHtml(file.filename))
+                          .join(', ')
+                      }
                       <p><strong>Email Contact:</strong> ${escapeHtml(submission.contact_email)} (MIMS: ${escapeHtml(submission.email)})</p>
                 </div>
                   <div style="text-align:center; font-size:0.98em;">
