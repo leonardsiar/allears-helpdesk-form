@@ -130,6 +130,10 @@ console.log('req.body:', req.body);
     body('formName').optional({ checkFalsy: true }).trim().escape(),
     body('formURL').optional({ checkFalsy: true }).isURL().trim(),
     body('school').optional({ checkFalsy: true }).trim().escape(),
+    body('studentFullName').optional({ checkFalsy: true }).trim().escape(),
+    body('studentNRIC').optional({ checkFalsy: true }).trim().escape(),
+    body('studentMIMS').optional({ checkFalsy: true }).trim().escape(),
+    body('studentRelated').toBoolean(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -160,9 +164,9 @@ console.log('req.body:', req.body);
       const insertQuery = `
         INSERT INTO submissions (
           user_role, issue_type, description, form_name, form_url,
-          full_name, email, contact_email, school, clicked_faq, relevant_guide, attachments
+          full_name, email, contact_email, school, clicked_faq, relevant_guide, attachments,student_related, student_full_name, student_nric, student_mims
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,$13, $14, $15, $16)
         RETURNING id
       `;
       const values = [
@@ -177,7 +181,11 @@ console.log('req.body:', req.body);
         data.school,
         clickedFAQ,
         relevantGuide,
-        attachmentsJson
+        attachmentsJson,
+        data.studentRelated,
+        data.studentFullName,
+        data.studentNRIC,
+        data.studentMIMS
       ];
       const result = await db.query(insertQuery, values);
       const newId = result.rows[0].id;
@@ -219,6 +227,12 @@ console.log('req.body:', req.body);
         <p><strong>Clicked FAQ before submitting:</strong> ${clickedFAQ}</p>
         <p><strong>Description:</strong><br>${data.description}</p>
         <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
+        ${data.studentRelated ? `
+          <hr>
+          <p><strong>Student Full Name:</strong> ${escapeHtml(data.studentFullName || '')}</p>
+          <p><strong>Student NRIC:</strong> ${escapeHtml(data.studentNRIC || '')}</p>
+          <p><strong>Student MIMS ID:</strong> ${escapeHtml(data.studentMIMS || '')}</p>
+        ` : ''}
       `;
 
       try {
@@ -319,6 +333,12 @@ console.log('req.body:', req.body);
                           .map(file => escapeHtml(file.filename))
                           .join(', ')
                       }
+                      ${submission.student_related ? `
+                        <hr>
+                        <p><strong>Student Full Name:</strong> ${escapeHtml(submission.student_full_name || '')}</p>
+                        <p><strong>Student NRIC:</strong> ${escapeHtml(submission.student_nric || '')}</p>
+                        <p><strong>Student MIMS ID:</strong> ${escapeHtml(submission.student_mims || '')}</p>
+                      ` : ''}
                       <p><strong>Email Contact:</strong> ${escapeHtml(submission.contact_email)} (MIMS: ${escapeHtml(submission.email)})</p>
                 </div>
                   <div style="text-align:center; font-size:0.98em;">

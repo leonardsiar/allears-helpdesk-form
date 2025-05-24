@@ -98,6 +98,29 @@
         <span role="img" aria-label="Describe"></span>
         <legend>📝 Tell us more</legend>
       </div>
+      <!-- Student Details Checkbox -->
+      <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 18px;">
+        <input type="checkbox" id="studentRelated" name="studentRelated" style="margin-right: 8px;">
+        <label for="studentRelated" style="font-weight: bold; margin: 0;">This issue involves a specific student</label>
+      </div>
+
+      <!-- Student Details Section (hidden by default) -->
+      <div id="studentDetailsSection" style="display: none; margin-top: 12px;">
+        <div class="form-group">
+          <label for="studentFullName">Student Full Name</label>
+          <input type="text" id="studentFullName" placeholder="Full name (to help us identify the student in MIMS)" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="studentNRIC">Student NRIC</label>
+          <input type="text" id="studentNRIC" name="studentNRIC" placeholder="NRIC (used to locate student records accurately)" autocomplete="off" maxlength="9" pattern="[STFGstfg][0-9]{7}[A-Za-z]">
+          <small>Format: S1234567A</small>
+        </div>
+        <div class="form-group">
+          <label for="studentMIMS">Student MIMS ID</label>
+          <input type="text" id="studentMIMS" name="studentMIMS" placeholder="MIMS email (so we can trace system access and activity)" autocomplete="off">
+        </div>
+      </div>
+      
       <div class="form-group">
         <label for="description">Issue Description <span class="required">*</span></label>
         <textarea type="text" id="description" name="description" rows="5" required placeholder="Describe the issue in your own words. Tell us what you expected, what actually happened, and what you've already tried." style="width: 90%;"></textarea>

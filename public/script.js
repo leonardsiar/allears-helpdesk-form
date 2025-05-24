@@ -18,6 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const fileUploadContainer = document.getElementById("fileUploadContainer");
   const fileInput = document.getElementById("filepond");
   const minChars = 100; // Minimum required characters
+  const studentRelated = document.getElementById("studentRelated");
+  const studentDetailsSection = document.getElementById("studentDetailsSection");
+  const studentFullName = document.getElementById("studentFullName");
+  const studentNRIC = document.getElementById("studentNRIC");
+  const studentMIMS = document.getElementById("studentMIMS");
 
    // Track FAQ link clicks with Google Analytics and sessionStorage
   if (linksList) {
@@ -35,6 +40,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+// Student ID
+  studentRelated.addEventListener("change", function () {
+    studentDetailsSection.style.display = this.checked ? "block" : "none";
+    // Toggle required attribute
+    studentFullName.required = this.checked;
+    studentNRIC.required = this.checked;
+    studentMIMS.required = this.checked;
+  });
 
   // Track form submissions and whether FAQ was clicked
   if (form) {
@@ -102,6 +115,13 @@ document.addEventListener("DOMContentLoaded", function () {
       relevantLinksDiv.style.display = "block";
 
       // Checkbox logic
+      const showConfirmCheckbox =
+  (userRole.value !== "parent" && userRole.value !== "student") ||
+  (
+    (userRole.value === "parent" || userRole.value === "student") &&
+    issueType.value === "responses"
+  );
+      if (showConfirmCheckbox) {
       if (!document.getElementById("confirmReadFAQ")) {
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -118,6 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         checkbox.addEventListener("change", evaluateStep1);
       }
+    }
     } else {
       fieldset2.style.display = "block"; // proceed if no FAQ
     }
@@ -231,6 +252,8 @@ document.addEventListener("DOMContentLoaded", function () {
     return `user${Math.floor(Math.random() * 10000)}@example.com`;
   }
 
+  
+
   function randomSentence(wordCount = 20) {
     const words = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua".split(" ");
     let s = [];
@@ -239,32 +262,48 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function fillTestData() {
-    userRole.value = randomFrom(["school-staff", "hq-staff", "student", "parent", "others"]);
-    if (userRole.value === "others") {
-      otherRoleDiv.style.display = "block";
-      document.getElementById("otherRoleText").value = randomString(10);
-    }
-    issueType.value = randomFrom([
-      "login", "create-form", "audience", "publish", "responses", "collaborators", "feature-request", "other"
-    ]);
-    description.value = randomSentence(20) + " " + randomSentence(20);
-    document.getElementById("formName").value = "Test Form " + randomString(4);
-    document.getElementById("formURL").value = "https://example.com/form/" + randomString(6);
-    document.getElementById("fullName").value = "Test User " + randomString(3);
-    document.getElementById("email").value = randomEmail();
-    document.getElementById("contactEmail").value = randomEmail();
-    document.getElementById("school").value = "Test School " + randomString(2);
+  userRole.value = randomFrom(["school-staff", "hq-staff", "student", "parent", "others"]);
+  userRole.dispatchEvent(new Event("change"));
 
-    // If you want to auto-check the "Use MIMS as Contact" box randomly:
-    useMimsCheckbox.checked = Math.random() > 0.5;
-    if (useMimsCheckbox.checked) {
-      contactEmail.value = mimsEmail.value;
-    }
-
-    // Trigger change events to update conditional fields
-    userRole.dispatchEvent(new Event("change"));
-    issueType.dispatchEvent(new Event("change"));
+  if (userRole.value === "others") {
+    otherRoleDiv.style.display = "block";
+    document.getElementById("otherRoleText").value = randomString(10);
   }
+
+  issueType.value = randomFrom([
+    "login", "create-form", "audience", "publish", "responses", "collaborators", "feature-request", "other"
+  ]);
+  issueType.dispatchEvent(new Event("change"));
+
+  description.value = randomSentence(20) + " " + randomSentence(20);
+  document.getElementById("formName").value = "Test Form " + randomString(4);
+  document.getElementById("formURL").value = "https://example.com/form/" + randomString(6);
+  document.getElementById("fullName").value = "Test User " + randomString(3);
+  document.getElementById("email").value = randomEmail();
+  document.getElementById("contactEmail").value = randomEmail();
+  document.getElementById("school").value = "Test School " + randomString(2);
+
+  // Randomly decide if the student checkbox should be checked (but never for userRole "student")
+  let shouldCheckStudent = userRole.value !== "student" && Math.random() > 0.5;
+  studentRelated.checked = shouldCheckStudent;
+  studentRelated.dispatchEvent(new Event("change"));
+
+  // Fill student fields after UI updates
+  setTimeout(() => {
+    if (shouldCheckStudent && studentDetailsSection.style.display !== "none") {
+      studentFullName.value = "Student " + randomString(5);
+      studentNRIC.value = Math.random() > 0.5 ? randomNRIC(true) : randomNRIC(false);
+      studentMIMS.value = "MIMS" + randomString(6);
+    } else {
+      studentFullName.value = "";
+      studentNRIC.value = "";
+      studentMIMS.value = "";
+    }
+  }, 0);
+
+  useMimsCheckbox.checked = Math.random() > 0.5;
+  useMimsCheckbox.dispatchEvent(new Event("change"));
+}
   // Fill test data button
   const fillTestDataButton = document.getElementById("fillTestData");
   fillTestDataButton.addEventListener("click", (e) => {
@@ -302,3 +341,17 @@ document.addEventListener("DOMContentLoaded", function () {
     //}
   //});
 });
+function updateStudentCheckboxVisibility() {
+  const studentCheckboxDiv = document.getElementById("studentRelated").parentElement;
+  if (userRole.value === "student") {
+    studentCheckboxDiv.style.display = "none";
+    studentRelated.checked = false;
+    studentDetailsSection.style.display = "none";
+  } else {
+    studentCheckboxDiv.style.display = "flex";
+  }
+}
+
+// Run on load and when userRole changes
+updateStudentCheckboxVisibility();
+userRole.addEventListener("change", updateStudentCheckboxVisibility);
