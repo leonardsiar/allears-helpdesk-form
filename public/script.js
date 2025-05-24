@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const enableUploadsCheckbox = document.getElementById("enableUploads");
   const fileUploadContainer = document.getElementById("fileUploadContainer");
   const fileInput = document.getElementById("filepond");
-  const minChars = 50; // Minimum required characters
+  const minChars = 100; // Minimum required characters
 
    // Track FAQ link clicks with Google Analytics and sessionStorage
   if (linksList) {
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Show/hide fieldset3 based on description input
   description.addEventListener("input", () => {
-    fieldset3.style.display = description.value.trim() !== "" ? "block" : "none";
+    fieldset3.style.display = description.value.trim().length >= 100 ? "block" : "none";
   });
 
   // Update character count on input
