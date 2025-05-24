@@ -268,27 +268,28 @@ document.addEventListener("DOMContentLoaded", function () {
   // Import FilePond plugins
   FilePond.registerPlugin(
     FilePondPluginFileValidateType,
-    FilePondPluginFileValidateSize
+    FilePondPluginFileValidateSize,
+    FilePondPluginImagePreview
   );
 
   // Initialize FilePond
   const pond = FilePond.create(fileInput, {
     allowMultiple: true,
     maxFileSize: "5MB",
-    acceptedFileTypes: ["image/jpeg", "image/png", "video/mp4"],
+    acceptedFileTypes: ["image/jpeg", "image/png", "video/mp4", "video/webm","video/quicktime"],
     labelIdle: 'Drag & Drop your files or <span class="filepond--label-action">Browse</span>',
-    labelFileTypeNotAllowed: "Invalid file type. Only JPG, PNG, and MP4 are allowed.",
+    labelFileTypeNotAllowed: "Invalid file type. Only JPG, PNG, MP4 and MOV are allowed.",
     labelMaxFileSizeExceeded: "File is too large. Max size is 5MB.",
     labelMaxFileSize: "Max file size is {filesize}.",
   });
 
   // Toggle FilePond visibility based on checkbox
-  enableUploadsCheckbox.addEventListener("change", () => {
-    if (enableUploadsCheckbox.checked) {
-      fileUploadContainer.style.display = "block";
-    } else {
-      fileUploadContainer.style.display = "none";
-      pond.removeFiles(); // Clear files if the checkbox is unchecked
-    }
-  });
+  //enableUploadsCheckbox.addEventListener("change", () => {
+    //if (enableUploadsCheckbox.checked) {
+     // fileUploadContainer.style.display = "block";
+    //} else {
+      //fileUploadContainer.style.display = "none";
+      //pond.removeFiles(); // Clear files if the checkbox is unchecked
+    //}
+  //});
 });

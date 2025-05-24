@@ -6,6 +6,16 @@
   <title>All Ears Helpdesk</title>
   <link rel="icon" type="image/png" href="Favicon/AE logo.png">
   <link rel="stylesheet" href="style.css">
+  <!-- FilePond styles -->
+<link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
+<link href="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet" />
+<!-- FilePond library -->
+<script src="https://unpkg.com/filepond@^4/dist/filepond.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.min.js"></script>
   <script src="guidanceMatrix.js"></script>
   <script src="script.js" defer></script>
   <!-- Google tag (gtag.js) -->
@@ -97,24 +107,22 @@
         <label for="formURL">Form Link</label>
         <input type="text" id="formURL" name="formURL" placeholder="Paste the full URL of the form, if available" style="width: 90%;">
       </div>
-    </fieldset>
-
-    <fieldset id="fieldset4" style="display:none;">
       <div class="section-header">
         <span role="img" aria-label="Uploads"></span>
         <legend>📸 Screenshots and Videos</legend>
       </div>
       <div class="form-group">
-        <input type="checkbox" id="enableUploads" name="enableUploads">
-        <label for="enableUploads">
-          Uploading screenshots or a short screen recording can significantly help our investigation. This is optional but appreciated.
-        </label>
+          <small>Uploading screenshots or a short screen recording can significantly help our investigation. This is optional but appreciated.</small>
       </div>
-      <div id="fileUploadContainer" style="display: none;">
+      <div id="fileUploadContainer">
         <input type="file" id="filepond" name="file" multiple>
-        <small>Max file size: 5MB per file. Accepted file types: JPG, PNG, MP4.</small>
+        <small>Max file size: 5MB per file. Accepted file types: JPG, PNG, MP4 and MOV.</small>
       </div>
     </fieldset>
+
+    
+      
+
 
     <!-- Contact information-->
     <fieldset id="fieldset3" style="display:none;">

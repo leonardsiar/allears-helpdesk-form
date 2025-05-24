@@ -127,8 +127,8 @@ textarea {
 }
 
 /* ====== Buttons ====== */
-button,
-input[type="submit"] {
+form button,
+form input[type="submit"] {
   background: var(--primary);
   color: #fff;
   font-size: 1rem;
@@ -143,8 +143,8 @@ input[type="submit"] {
   min-height: 48px;
 }
 
-button:hover,
-input[type="submit"]:hover {
+form button:hover,
+form input[type="submit"]:hover {
   background: var(--primary-hover);
 }
 
@@ -358,6 +358,20 @@ input[type="checkbox"] {
   display: flex;
   justify-content: center;
   margin-top: 32px;
+}
+
+/* Fix FilePond remove (delete) button style */
+.filepond--action-remove-item {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  width: 2em !important;
+  height: 2em !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
 }
 
 /* ====== Fill Test Data Button ====== */
