@@ -247,7 +247,7 @@ app.post(
       }
 
     
-        res.redirect(`/success/${newId}`);
+        res.json({ success: true, id: newId });
       } catch (error) {
       console.error('Error processing request:', error);
       res.status(500).send(`
@@ -316,26 +316,32 @@ app.post(
     
         res.send(`
           <!DOCTYPE html>
-          <html>
-            <head>
-              <title>Submission Successful</title>
-              <link rel="icon" type="image/png" href="/Favicon/Party%20popper.png">
-              <link rel="stylesheet" href="/style.css">
-              <style>
-                body { font-family: sans-serif; text-align: center; margin-top: 5em; }
-                .success { color: green; font-size: 1.5em; }
-              </style>
-            </head>
-            <body>
-              <h1>🎉 Thanks, ${escapeHtml(submission.full_name)}!</h1>
-              <p><strong>Issue Type:</strong> ${escapeHtml(submission.issue_type)}</p>
-              <p><strong>Description:</strong><br>${escapeHtml(submission.description)}</p>
-              ${guideInfo}
-              <p><strong>Submitted by:</strong> ${escapeHtml(submission.contact_email)} (MIMS: ${escapeHtml(submission.email)})</p>
-              <br>
-              <a href="/">⬅ Back to Helpdesk</a>
-            </body>
-          </html>
+            <html>
+              <head>
+                <meta charset="UTF-8">
+                <title>Submission Successful</title>
+                <link rel="icon" type="image/png" href="/Favicon/Party%20popper.png">
+                <link rel="stylesheet" href="/style.css">
+              </head>
+              <body>
+                <h1>🎉 Thank you ${escapeHtml(submission.full_name)}</h1>
+                 <div class="email-summary">
+                      <h3>Email sent to helpdesk:</h3>
+                      <p><strong>Role:</strong> ${escapeHtml(submission.userRole)}</p>
+                      <p><strong>Issue Type:</strong> ${escapeHtml(submission.issue_type)}</p>
+                      <p><strong>Description:</strong><br>${escapeHtml(submission.description)}</p>
+                      ${guideInfo}
+                      <p><strong>Attached file:</strong>${escapeHtml()}
+                      <p><strong>Email Contact:</strong> ${escapeHtml(submission.contact_email)} (MIMS: ${escapeHtml(submission.email)})</p>
+                </div>
+                  <div style="text-align:center; font-size:0.98em;">
+                    🕒 You can expect a response within 1–2 working days.
+                  </div>
+                <div class="actions">
+                  <a href="/" class="link-card">⬅ Back to Helpdesk</a>
+                </div>
+              </body>
+            </html>
         `);
       } catch (e) {
         res.status(500).send('Error retrieving submission');

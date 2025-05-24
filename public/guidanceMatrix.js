@@ -67,13 +67,13 @@ const guidanceMatrix = {
     other: { url: "", title: "" }
   },
   others: {
-    login: { url: "", title: "" },
-    "create-form": { url: "", title: "" },
-    audience: { url: "", title: "" },
-    publish: { url: "", title: "" },
-    responses: { url: "", title: "" },
-    collaborators: { url: "", title: "" },
+    login: faqDetails.login,
+    "create-form": faqDetails["create-form"],
+    audience: faqDetails.audience,
+    publish: faqDetails.publish,
+    responses: faqDetails.responses,
+    collaborators: faqDetails.collaborators,
     "feature-request": { url: "", title: "" },
     other: { url: "", title: "" }
-  }
+  },
 };

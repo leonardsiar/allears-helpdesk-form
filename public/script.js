@@ -196,10 +196,17 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // If successful, redirect to the success page
-      window.location.href = "/success";
+      const data = await response.json();
+      if (data.success && data.id) {
+          window.location.href = `/success/${data.id}`;
+        } else {
+          console.error("Error submitting the form:", error);
+          alert("An unexpected error occurred. Please try again later.");
+        }
     } catch (error) {
       console.error("Error submitting the form:", error);
-      alert("An unexpected error occurred. Please try again later.");
+          alert("An unexpected error occurred. Please try again later.");
+      
     }
   });
   
