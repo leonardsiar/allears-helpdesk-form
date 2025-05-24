@@ -26,7 +26,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, 'uploads');
 
-const fileTypes = ['screenshot', 'video'];
+const fileTypes = ['file'];
 
 // Check for required environment variables
 if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM || !process.env.EMAIL_TO) {
@@ -116,7 +116,7 @@ async function scanFileForViruses(filePath) {
 app.post(
   '/submit',
   (req, res, next) => {
-    upload.fields([{ name: 'screenshot' }, { name: 'video' }])(req, res, async (err) => {
+    upload.any()(req, res, async (err) => {
       if (err instanceof multer.MulterError || err) {
         return res.status(400).json({ errors: [{ msg: err.message }] });
       }
@@ -162,35 +162,48 @@ app.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
+    let fileMetadata = [];
+for (const file of req.files || []) {
+  fileMetadata.push({
+    field: file.fieldname,
+    filename: file.originalname,
+    path: file.path,
+    size: file.size,
+    mimetype: file.mimetype
+  });
+}
+const attachmentsJson = JSON.stringify(fileMetadata);
+
     try {
       const data = req.body;
       const clickedFAQ = data.clickedFAQ === 'yes' ? 'Yes' : 'No';
       const relevantGuide = data.relevantGuide || '{}'; // Default to an empty JSON string
 
-      // --- DB INSERTION ---
-      const insertQuery = `
-        INSERT INTO submissions (
-          user_role, issue_type, description, form_name, form_url,
-          full_name, email, contact_email, school, clicked_faq, relevant_guide
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-        RETURNING id
-      `;
-      const values = [
-        data.userRole,
-        data.issueType,
-        data.description,
-        data.formName,
-        data.formURL,
-        data.fullName,
-        data.email,
-        data.contactEmail,
-        data.school,
-        clickedFAQ,
-        relevantGuide
-      ];
-      const result = await db.query(insertQuery, values);
-      const newId = result.rows[0].id;
+// --- DB INSERTION ---
+const insertQuery = `
+  INSERT INTO submissions (
+    user_role, issue_type, description, form_name, form_url,
+    full_name, email, contact_email, school, clicked_faq, relevant_guide, attachments
+  )
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+  RETURNING id
+`;
+const values = [
+  data.userRole,
+  data.issueType,
+  data.description,
+  data.formName,
+  data.formURL,
+  data.fullName,
+  data.email,
+  data.contactEmail,
+  data.school,
+  clickedFAQ,
+  relevantGuide,
+  attachmentsJson // <-- Add this as the last value
+];
+const result = await db.query(insertQuery, values);
+const newId = result.rows[0].id;
 
       let guideInfo = '';
       if (data.relevantGuide) {
