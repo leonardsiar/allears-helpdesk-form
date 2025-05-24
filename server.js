@@ -11,6 +11,7 @@ import fs from 'fs';
 import { fileTypeFromBuffer } from 'file-type';
 import sanitizeFilename from 'sanitize-filename';
 import clamd from 'clamdjs';
+import db from './db.js'
 
 // Initialize ClamAV scanner
 const scanner = clamd.createScanner('127.0.0.1', 3310);
@@ -27,10 +28,12 @@ const uploadsDir = path.join(__dirname, 'uploads');
 
 const fileTypes = ['screenshot', 'video'];
 
+// Check for required environment variables
+if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM || !process.env.EMAIL_TO) {
+  console.error('Missing required environment variables.');
+  process.exit(1); // Exit the application
+  }
 app.set('trust proxy', 1);
-
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -45,6 +48,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
 }
+  
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
@@ -94,6 +98,20 @@ const limiter = rateLimit({
 });
 app.use('/submit', limiter);
 
+async function scanFileForViruses(filePath) {
+  try {
+    const result = await scanner.scanFile(filePath, 3000, 1024 * 1024); // Timeout: 3000ms, Max size: 1MB
+    if (result.includes('FOUND')) {
+      const virus = result.split('FOUND')[0].trim();
+      throw new Error(`File is infected with ${virus}`);
+    }
+    console.log('File is clean:', result);
+  } catch (error) {
+    console.error('Error scanning file:', error.message);
+    throw error;
+  }
+}
+
 // POST endpoint to handle form submission
 app.post(
   '/submit',
@@ -136,6 +154,7 @@ app.post(
     body('school').optional({ checkFalsy: true }).trim().escape(),
   ],
   async (req, res) => {
+    let files = req.files || {};
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       // Return errors as JSON
@@ -148,7 +167,31 @@ app.post(
       const clickedFAQ = data.clickedFAQ === 'yes' ? 'Yes' : 'No';
       const relevantGuide = data.relevantGuide || '{}'; // Default to an empty JSON string
 
-      const files = req.files || {};
+      // --- DB INSERTION ---
+      const insertQuery = `
+        INSERT INTO submissions (
+          user_role, issue_type, description, form_name, form_url,
+          full_name, email, contact_email, school, clicked_faq, relevant_guide
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        RETURNING id
+      `;
+      const values = [
+        data.userRole,
+        data.issueType,
+        data.description,
+        data.formName,
+        data.formURL,
+        data.fullName,
+        data.email,
+        data.contactEmail,
+        data.school,
+        clickedFAQ,
+        relevantGuide
+      ];
+      const result = await db.query(insertQuery, values);
+      const newId = result.rows[0].id;
+
       let guideInfo = '';
       if (data.relevantGuide) {
         try {
@@ -190,42 +233,22 @@ app.post(
         <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
       `;
 
-      await resend.emails.send({
+      try {
+       await resend.emails.send({
         from: process.env.EMAIL_FROM,
         to: process.env.EMAIL_TO,
         subject: `Helpdesk Ticket: ${data.fullName} | ${data.userRole} | ${data.issueType}`,
         html: htmlBody,
         attachments,
       });
+        console.log('Email sent successfully');
+      } catch (error) {
+        console.error('Error sending email:', error);
+      }
 
-      console.log("Success page requested")
-      res.send(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <title>Submission Successful</title>
-          <link rel="icon" type="image/png" href="Favicon/Party popper.png">
-          <link rel="stylesheet" href="style.css">
-        </head>
-        <body>
-          <h1>All Ears Helpdesk</h1>
-          <div class="success" style="max-width:520px;margin:32px auto 24px auto;">
-        🎉 <strong>Thanks! Your request has been successfully submitted.</strong><br>
-        We’ve received your details and our team will follow up shortly.<br>
-        <span style="font-size:0.98em;">🕒 You can expect a response within 1–2 working days.</span>
-          </div>
-          <div class="email-summary">
-        <h3 class="email-header">Email sent to helpdesk:</h3>
-        ${htmlBody}
-          </div>
-          <div class="actions" style="max-width:480px; margin: 32px auto 64px auto; text-align: center;">
-        <button type="button" id="submitRequest" onclick="window.location='/'">🏠 Back to Helpdesk Home</button>
-          </div>
-        </body>
-        </html>
-      `);
-    } catch (error) {
+    
+        res.redirect(`/success/${newId}`);
+      } catch (error) {
       console.error('Error processing request:', error);
       res.status(500).send(`
         <html>
@@ -255,29 +278,70 @@ app.post(
             });
           }
         }
-      });
+       });
+      }
     }
-  }
-);
-
-// Check for required environment variables
-if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM || !process.env.EMAIL_TO) {
-  console.error('Missing required environment variables.');
-  process.exit(1); // Exit the application
-}
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-async function scanFileForViruses(filePath) {
-  try {
-    const result = await scanner.scanFile(filePath, 3000, 1024 * 1024); // Timeout: 3000ms, Max size: 1MB
-    if (result.includes('FOUND')) {
-      const virus = result.split('FOUND')[0].trim();
-      throw new Error(`File is infected with ${virus}`);
+  );
+    
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
-    console.log('File is clean:', result);
-  } catch (error) {
-    console.error('Error scanning file:', error.message);
-    throw error;
-  }
-}
+
+    // Success page route
+    app.get('/success/:id', async (req, res) => {
+      const { id } = req.params;
+      const query = 'SELECT * FROM submissions WHERE id = $1';
+      try {
+        const result = await db.query(query, [id]);
+        const submission = result.rows[0];
+    
+        if (!submission) {
+          return res.status(404).send('Submission not found');
+        }
+    
+        let guideInfo = '';
+        try {
+          const guide = JSON.parse(submission.relevant_guide);
+          if (guide?.url && guide?.title) {
+            guideInfo = `<p><strong>Relevant Link:</strong> <a href="${escapeHtml(guide.url)}">${escapeHtml(guide.title)}</a></p>`;
+          } else if (guide?.title) {
+            guideInfo = `<p><strong>Relevant Info:</strong> ${escapeHtml(guide.title)}</p>`;
+          }
+        } catch {}
+    
+        res.send(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Submission Successful</title>
+              <link rel="icon" type="image/png" href="/Favicon/Party%20popper.png">
+              <link rel="stylesheet" href="/style.css">
+              <style>
+                body { font-family: sans-serif; text-align: center; margin-top: 5em; }
+                .success { color: green; font-size: 1.5em; }
+              </style>
+            </head>
+            <body>
+              <h1>🎉 Thanks, ${escapeHtml(submission.full_name)}!</h1>
+              <p><strong>Issue Type:</strong> ${escapeHtml(submission.issue_type)}</p>
+              <p><strong>Description:</strong><br>${escapeHtml(submission.description)}</p>
+              ${guideInfo}
+              <p><strong>Submitted by:</strong> ${escapeHtml(submission.contact_email)} (MIMS: ${escapeHtml(submission.email)})</p>
+              <br>
+              <a href="/">⬅ Back to Helpdesk</a>
+            </body>
+          </html>
+        `);
+      } catch (e) {
+        res.status(500).send('Error retrieving submission');
+      }
+    });
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
