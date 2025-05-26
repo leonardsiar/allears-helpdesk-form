@@ -248,12 +248,33 @@ console.log('req.body:', req.body);
          <p><em>Submitted via the All Ears Helpdesk form</em></p>
       `;
 
+        const textBody = `
+        Helpdesk Submission
+
+        Submitted by: ${data.fullName} (${data.contactEmail})
+        MIMS ID: ${data.email}
+        Role: ${data.userRole}
+        School: ${data.school || 'N/A'}
+        Issue Type: ${data.issueType}
+        Description: ${data.description}
+        Clicked FAQ: ${clickedFAQ}
+
+        ${data.studentRelated ? `
+        Student Full Name: ${data.studentFullName}
+        Student NRIC: ${data.studentNRIC}
+        Student MIMS ID: ${data.studentMIMS}
+        ` : ''}
+
+        Submitted via All Ears Helpdesk
+        `;
+
       try {
         await resend.emails.send({
           from: process.env.EMAIL_FROM,
           to: process.env.EMAIL_TO,
           subject: `[Helpdesk] ${data.issueType} |${data.userRole} | ${data.fullName} | ${data.school || ''}`,
           html: htmlBody,
+          text: textBody,
           attachments,
         });
         console.log('Email sent successfully');
