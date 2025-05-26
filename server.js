@@ -12,6 +12,7 @@ import { fileTypeFromBuffer } from 'file-type';
 import sanitizeFilename from 'sanitize-filename';
 import clamd from 'clamdjs';
 import db from './db.js'
+import { v4 as uuidv4 } from 'uuid';
 
 // Initialize ClamAV scanner
 const scanner = clamd.createScanner('127.0.0.1', 3310);
@@ -161,15 +162,18 @@ console.log('req.body:', req.body);
       const relevantGuide = data.relevantGuide || '{}';
 
       // --- DB INSERTION ---
+      const ticketId = uuidv4();
       const insertQuery = `
         INSERT INTO submissions (
-          user_role, issue_type, description, form_name, form_url,
-          full_name, email, contact_email, school, clicked_faq, relevant_guide, attachments,student_related, student_full_name, student_nric, student_mims
+          id, user_role, issue_type, description, form_name, form_url,
+          full_name, email, contact_email, school, clicked_faq, relevant_guide,
+          attachments, student_related, student_full_name, student_nric, student_mims
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,$13, $14, $15, $16)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
         RETURNING id
       `;
       const values = [
+        ticketId,
         data.userRole,
         data.issueType,
         data.description,
@@ -188,7 +192,7 @@ console.log('req.body:', req.body);
         data.studentMIMS
       ];
       const result = await db.query(insertQuery, values);
-      const newId = result.rows[0].id;
+      // const newId = result.rows[0].id;
 
       // Prepare guide info for email
       let guideInfo = '';
@@ -219,27 +223,36 @@ console.log('req.body:', req.body);
       console.log('Email attachments:', attachments);
 
       const htmlBody = `
-        <h3>New Helpdesk Ticket</h3>
-        <p><strong>Role:</strong> ${data.userRole}</p>
-        <p><strong>School:</strong> ${data.school}</p>
-        <p><strong>Issue:</strong> ${data.issueType}</p>
+        <h2>New Helpdesk Ticket Submission</h2>
+        <p><strong>Submitted by:</strong> ${escapeHtml(data.fullName)} (${escapeHtml(data.contactEmail)})</p>
+        <p><strong>MIMS ID:</strong> ${escapeHtml(data.email)}</p>
+        <p><strong>Role:</strong> ${escapeHtml(data.userRole)}</p>
+        <p><strong>School:</strong> ${escapeHtml(data.school || '')}</p>
+
+        <hr>
+        <p><strong>Issue Details</strong></p>
+        <p><strong>Issue Type:</strong> ${escapeHtml(data.issueType)}</p>
+        <p><strong>Description:</strong><br>${escapeHtml(data.description)}</p>
         ${guideInfo}
         <p><strong>Clicked FAQ before submitting:</strong> ${clickedFAQ}</p>
-        <p><strong>Description:</strong><br>${data.description}</p>
-        <p><strong>Contact:</strong> ${data.fullName}, ${data.contactEmail} (MIMS: ${data.email})</p>
+
         ${data.studentRelated ? `
           <hr>
+          <p><strong>Student Details</strong></p>
           <p><strong>Student Full Name:</strong> ${escapeHtml(data.studentFullName || '')}</p>
           <p><strong>Student NRIC:</strong> ${escapeHtml(data.studentNRIC || '')}</p>
           <p><strong>Student MIMS ID:</strong> ${escapeHtml(data.studentMIMS || '')}</p>
         ` : ''}
+
+        <hr>
+         <p><em>Submitted via the All Ears Helpdesk form</em></p>
       `;
 
       try {
         await resend.emails.send({
           from: process.env.EMAIL_FROM,
           to: process.env.EMAIL_TO,
-          subject: `Helpdesk Ticket: ${data.fullName} | ${data.userRole} | ${data.issueType}`,
+          subject: `[Helpdesk] ${data.issueType} |${data.userRole} | ${data.fullName} | ${data.school || ''}`,
           html: htmlBody,
           attachments,
         });
@@ -248,7 +261,7 @@ console.log('req.body:', req.body);
         console.error('Error sending email:', error);
       }
 
-      res.json({ success: true, id: newId });
+      res.json({ success: true, id: ticketId });
     } catch (error) {
       console.error('Error processing request:', error);
       res.status(500).send(`
