@@ -59,11 +59,6 @@ const storage = multer.diskStorage({
     const sanitizedFilename = sanitizeFilename(normalized);
     const filePath = `${Date.now()}-${sanitizedFilename}`;
     cb(null, filePath);
-
-    // Set file permissions to read/write only for the owner (600)
-    fs.chmod(path.join('uploads', filePath), 0o600, (err) => {
-      if (err) console.error(`Error setting file permissions for ${filePath}:`, err);
-    });
   },
 });
 
@@ -212,6 +207,11 @@ console.log('req.body:', req.body);
       // Prepare attachments for Resend
       let attachments = [];
       for (const file of req.files || []) {
+        try {
+          await fs.promises.chmod(file.path, 0o600);
+        } catch (err) {
+          console.error(`Error setting permissions for ${file.filename}:`, err);
+        }
         const content = await fs.promises.readFile(file.path, 'base64');
         attachments.push({
           filename: file.originalname,
